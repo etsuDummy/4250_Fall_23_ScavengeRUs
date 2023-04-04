@@ -1,0 +1,41 @@
+Test Admin Account:
+UN: waltonca@etsu.edu
+PW: YMXH@9J!72kM6Em
+
+Standards
+Definition of Done: Code that works, meets the requirements, has some error handling, and is documented
+Code Review: On completion of a task, peer review by another dev team member
+Coding Standards: 
+  Commenting: Classes, methods, variables; up for debate
+  "Clean Code": Indentation, curly braces below
+  Naming Convention: Names that seem self-explanatory
+Unit Testing: At the end of a feature's completion, test both happy and unhappy paths
+Requirements Testing: PO's job, traceability matrix
+Documentation: Commenting, Readme, UML Diagram
+GitHub Standard: Push atleast once per task. Pull frequently.
+Tools: DB Browser for SQLite
+  IDE: VS
+
+Sprint 1:
+Objective: Get everyone onto the same page, get the development environment set up, and begin work. 
+*** SUBJECT TO CHANGE ***
+Tasks: 
+  Get the Github set up 
+  Get everyone connected to the Github 
+  Get test accounts and give out the logins for at least one admin account and at least one player account 
+  A.3.c Cannot change status or creation date (Can modify start time before it has started, status changes automatically)
+    * Not being able to delete a hunt once it has started (Remove functionality) Max Key
+    * Edit the start time 
+    * Test that the current solution changes status automatically
+    * Cannot edit creation date
+  
+Secondary Objective Options
+  A.3.a Can only edit pending or active hunts
+    * Verify that you cannot edit completed hunts
+    * Remove ability to edit completed hunt
+  A.2.c Custom Invitations
+  A.2.f Hunt URLs
+  A.4.d Access Code and Invitation sending
+  Figure out how to get the current solution onto the VM 
+  Deploy the solution to the VM 
+  Show everyone how to connect to it 
