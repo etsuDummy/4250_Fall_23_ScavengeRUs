@@ -30,6 +30,13 @@ Tasks:
     * Cannot edit creation date
   
 Secondary Objective Options
+  Test submission status for when a player completes a task
+      Correct entry
+      Incorrect entry
+      No internet
+      Server/database update on correct entry
+      Actually shows the update to the user
+      Verify that the user cannot complete the same task multiple times
   A.3.a Can only edit pending or active hunts
     * Verify that you cannot edit completed hunts
     * Remove ability to edit completed hunt
