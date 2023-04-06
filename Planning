@@ -20,13 +20,11 @@ Sprint 1:
 Objective: Get everyone onto the same page, get the development environment set up, and begin work. 
 *** SUBJECT TO CHANGE ***
 Tasks: 
-  Get the Github set up 
+  Get the Github set up ✓
   Get everyone connected to the Github ✓
   Get test accounts and give out the logins for at least one admin account and at least one player account ✓
   A.3.c Cannot change status or creation date (Can modify start time before it has started, status changes automatically)
-    * Not being able to delete a hunt once it has started (Remove functionality) Max Key
-    * Edit the start time 
-    * Test that the current solution changes status automatically
+    * Edit the start time ✓
     * Cannot edit creation date ✓
   
 Sprint 2:
@@ -55,6 +53,8 @@ Secondary Objective Options
       Server/database update on correct entry
       Actually shows the update to the user ✓
       Verify that the user cannot complete the same task multiple times ✓
+  Not being able to delete a hunt once it has started (Remove functionality) Max Key
+  Test that the current solution changes status automatically
   A.3.a Can only edit pending or active hunts
     * Verify that you cannot edit completed hunts
     * Remove ability to edit completed hunt
