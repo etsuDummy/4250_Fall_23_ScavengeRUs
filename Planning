@@ -29,6 +29,24 @@ Tasks:
     * Test that the current solution changes status automatically
     * Cannot edit creation date ✓
   
+Sprint 2:
+Objective: Restrict the current solution to better fit the timeline. Get an email set up to easily let players know that they are added to the hunt. 
+Experiment with getting email to SMS working. Research on QR codes.
+Acceptance Criteria: 
+  One hunt. A set amount of tasks.
+  Once an account is created, you only need access code to login.
+  A secure email can send an email to the user containing the URL to the hunt. If SMS cannot be set up, it will also contain the access code.
+  If SMS can be set up, verify that the SMS sends the access code successfully to multiple carriers.
+  Get an idea on whether or not QR codes are doable. If they are doable, show how it works and how it integrates into the solution.
+  Admins can send players email/SMS automatically upon creating an account.
+  Players can create their own account to join the hunt.
+  
+Tasks: 
+  Research for email to SMS solution
+  Figure out how to store the password for the email
+  Figure out how to handle different carriers
+  Research for QR code solution
+  
 Secondary Objective Options
   Test submission status for when a player completes a task
       Correct entry ✓
