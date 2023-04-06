@@ -18,6 +18,9 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>*@
             <th>
+                @Html.DisplayNameFor(model => model.CreationDate)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.HuntName)
             </th>
             <th>
@@ -43,7 +46,10 @@
         <tr>
 @*            <td>
                 @Html.DisplayFor(modelItem => item.Id)
-            </td>  *@          
+            </td>  *@   
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.HuntName)
             </td>
@@ -74,7 +80,7 @@
                 @Html.DisplayFor(modelItem => item.HuntLocations.Count)
             </td>
             <td>
-                @*@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |*@
+                @Html.ActionLink("Edit", "Update", new { id=item.Id }) |
                 @Html.ActionLink("View Hunt", "ViewTasks", new {  id=item.Id  }) |
                 @Html.ActionLink("Delete Hunt", "Delete", new {  id=item.Id  })
             </td>

@@ -61,7 +61,11 @@
 
             </td>
                 <td>
-                    @Html.DisplayFor(model => item.Hunt.HuntName)
+                    @if (item.Hunt != null)
+                    {
+                        @Html.DisplayFor(model => item.Hunt.HuntName)
+                    }
+                    
                 </td>
             <td>
                     @Html.ActionLink("Edit", "Edit", new { id=item.UserName }) |

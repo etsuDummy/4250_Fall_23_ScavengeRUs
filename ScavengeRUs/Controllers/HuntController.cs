@@ -54,6 +54,7 @@ namespace ScavengeRUs.Controllers
         {
             if (ModelState.IsValid)
             {
+                hunt.CreationDate = DateTime.Now;
                 await _huntRepo.CreateAsync(hunt);
                 return RedirectToAction("Index");
             }
@@ -310,6 +311,22 @@ namespace ScavengeRUs.Controllers
         {
             await _huntRepo.RemoveTaskFromHunt(id, huntid);
             return RedirectToAction("ManageTasks", "Hunt", new {id=huntid});
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult>  Update(int id)
+        {
+            var hunt = await _huntRepo.ReadAsync(id);
+
+            return View(hunt);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult Update(int id, Hunt hunt)
+        {
+            _huntRepo.Update(id, hunt);
+            return RedirectToAction("Index");
         }
     }
 }

@@ -16,5 +16,6 @@ namespace ScavengeRUs.Services
         Task AddLocation(int locationId, int huntId);
         Task<Location> ReadLocation(int id);
         Task RemoveTaskFromHunt(int id, int huntid);
+        void Update(int oldId, Hunt hunt);
     }
 }
