@@ -6,6 +6,7 @@ using ScavengeRUs.Services;
 using System;
 using System.Security.Claims;
 
+
 namespace ScavengeRUs.Controllers
 {
 
@@ -16,14 +17,17 @@ namespace ScavengeRUs.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepo;
+        private readonly Functions _functions;
         string defaultPassword = "Etsupass12!";
         /// <summary>
         /// This is the dependecy injection for the User Repository that connects to the database
         /// </summary>
         /// <param name="userRepo"></param>
-        public UserController(IUserRepository userRepo)
+        public UserController(IUserRepository userRepo, IConfiguration configuration)
         {
             _userRepo = userRepo;
+            _functions = new Functions(configuration);
+
         }
         /// <summary>
         /// This is the landing page for www.localhost.com/user/manage aka "Admin Portal"
@@ -51,6 +55,7 @@ namespace ScavengeRUs.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Edit([Bind(Prefix = "id")]string username)
         {
+            await _functions.SendEmail("thomas.foreman17@gmail.com", "Hello, from ASP.NET", "Body");
             var user = await _userRepo.ReadAsync(username);
             return View(user);
         }
