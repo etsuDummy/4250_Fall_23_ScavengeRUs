@@ -55,7 +55,7 @@ namespace ScavengeRUs.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Edit([Bind(Prefix = "id")]string username)
         {
-            await _functions.SendEmail("4239006885@txt.att.net", "Hello, from ASP.NET", "Body");
+            //await _functions.SendEmail("4239006885@txt.att.net", "Hello, from ASP.NET", "Body");
             var user = await _userRepo.ReadAsync(username);
             return View(user);
         }
