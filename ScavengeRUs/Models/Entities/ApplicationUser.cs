@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ScavengeRUs.Models.Enums;
 
 namespace ScavengeRUs.Models.Entities
 {
@@ -27,5 +28,6 @@ namespace ScavengeRUs.Models.Entities
         [NotMapped]
         public ICollection<string> Roles { get; set; }
     = new List<string>();
+        public Carriers Carrier { get; set; }
     }
 }
