@@ -53,7 +53,7 @@ Secondary Objective Options
       Server/database update on correct entry
       Actually shows the update to the user ✓
       Verify that the user cannot complete the same task multiple times ✓
-  Not being able to delete a hunt once it has started (Remove functionality) Max Key
+  Not being able to delete a hunt once it has started (Remove functionality) 
   Test that the current solution changes status automatically
   A.3.a Can only edit pending or active hunts
     * Verify that you cannot edit completed hunts
