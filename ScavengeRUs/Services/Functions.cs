@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using Google.Cloud.SecretManager.V1;
+using ScavengeRUs.Services;
 
 
 public class Functions
@@ -68,4 +69,5 @@ public class Functions
         string password = passwordBytes.ToStringUtf8();
         return password;
     }
+
 }

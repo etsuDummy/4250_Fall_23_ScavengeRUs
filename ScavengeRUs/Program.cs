@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ScavengeRUs.Data;
 using ScavengeRUs.Models.Entities;
 using ScavengeRUs.Services;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<Functions>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IHuntRepository, HuntRepository>();
 var app = builder.Build();

@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ScavengeRUs.Models.Entities;
+using ScavengeRUs.Models.Enums;
 using ScavengeRUs.Services;
 using System;
 using System.Security.Claims;
+using System.IO;
+using Microsoft.VisualBasic.FileIO;
+
 
 
 namespace ScavengeRUs.Controllers
@@ -19,6 +23,7 @@ namespace ScavengeRUs.Controllers
         private readonly IUserRepository _userRepo;
         private readonly Functions _functions;
         string defaultPassword = "Etsupass12!";
+
         /// <summary>
         /// This is the dependecy injection for the User Repository that connects to the database
         /// </summary>
@@ -56,6 +61,7 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Edit([Bind(Prefix = "id")]string username)
         {
             //await _functions.SendEmail("4239006885@txt.att.net", "Hello, from ASP.NET", "Body");
+            //await CreateUsers("testdata.csv");
             var user = await _userRepo.ReadAsync(username);
             return View(user);
         }
@@ -146,6 +152,18 @@ namespace ScavengeRUs.Controllers
         {
             var currentUser = await _userRepo.ReadAsync(User.Identity?.Name!);
             return View(currentUser);
+        }
+
+        public async Task<IActionResult> CreateUsers(string? filePath, string? serverUrl)
+        {
+            filePath = "Services/Users.csv";
+            serverUrl = $"{Request.Scheme}://{Request.Host}";
+            await _userRepo.CreateUsers(filePath, serverUrl);
+
+            
+
+            // Redirect to the Index action of the UsersController
+            return RedirectToAction("Manage");
         }
     }
 }
