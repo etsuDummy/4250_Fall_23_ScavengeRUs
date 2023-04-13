@@ -58,8 +58,18 @@ Tasks:
   Check that the batch creation works ✓
   
  Sprint 3:
- Objective: Get the solution down to a single hunt to make it simple for users to start playing. 
+ Objective: Get the solution down to a single hunt to make it simple for users to start playing. Polish the account access (profile button, notification on batch account creation).
+ Attempt to get SMS working to make sure players get their access codes. Work on documentation to make the next team's lives easier. 
  Acceptance Criteria: 
+  One hunt from all angles, including admin. An admin WILL mess up the "one hunt" goal.
+  "Hello [Name]!" button no longer takes you to your profile.
+  The one hunt looks more presentable.
+  There is a notification once the batch account creation is done.
+  Cannot create accounts that are already created. 
+  SMS is in a semi-working state.
+  Documentation has begun. Not just the comments, but rather an in-depth description into how the solution works and the technologies behind it.
+Tasks:
+  
   
 Secondary Objective Options
   Test submission status for when a player completes a task
