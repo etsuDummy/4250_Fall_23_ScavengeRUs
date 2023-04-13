@@ -69,7 +69,15 @@ Tasks:
   SMS is in a semi-working state.
   Documentation has begun. Not just the comments, but rather an in-depth description into how the solution works and the technologies behind it.
 Tasks:
-  
+  Remove "Hello player" as a link
+  Remove Add hunt functionality to simplify the game down to a single hunt 
+  Create email to text functionality
+  Prevent multiple inputs on batch creation
+  Prevent duplicated users
+  Popup message on batch completiong saying failure/success
+  Add details to the created batch popup on how many accounts were created
+  Functionality to send specific users access codes 
+
   
 Secondary Objective Options
   Test submission status for when a player completes a task
