@@ -20,7 +20,7 @@ namespace ScavengeRUs.Data
         public DbSet<Hunt> Hunts => Set<Hunt>();
         public DbSet<HuntLocation> HuntLocation => Set<HuntLocation>();
         public DbSet<AccessCode> AccessCodes => Set<AccessCode>();
-
+        public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
 
         /// <summary>
         /// This sets up with cascade contraint when deleting related data in the DB
