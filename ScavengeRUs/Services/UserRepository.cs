@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using ScavengeRUs.Data;
 using ScavengeRUs.Models.Entities;
+using ScavengeRUs.Models.Enums;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+
 
 namespace ScavengeRUs.Services
 {
@@ -13,6 +16,7 @@ namespace ScavengeRUs.Services
     /// </summary>
     public class UserRepository : IUserRepository
     {
+        private readonly Functions _functions;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -22,13 +26,16 @@ namespace ScavengeRUs.Services
         /// <param name="db"></param>
         /// <param name="userManager"></param>
         /// <param name="roleManager"></param>
-        public UserRepository(ApplicationDbContext db, 
+        public UserRepository(ApplicationDbContext db,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            Functions functions
+            )
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _functions = functions;
         }
         /// <summary>
         /// Returns a user object given the username
@@ -37,12 +44,12 @@ namespace ScavengeRUs.Services
         /// <returns></returns>
         public async Task<ApplicationUser?> ReadAsync(string userName)
         {
-            var user =  _db.Users.FirstOrDefault(u => u.UserName.ToLower() == userName.ToLower());
+            var user = _db.Users.FirstOrDefault(u => u.UserName.ToLower() == userName.ToLower());
             if (user != null)
             {
                 _db.Entry(user).Reference(h => h.Hunt).Load();
                 user.Roles = await _userManager.GetRolesAsync(user);
-                await _db.SaveChangesAsync();   
+                await _db.SaveChangesAsync();
             }
             return user;
         }
@@ -73,8 +80,8 @@ namespace ScavengeRUs.Services
             //{
             //    await _roleManager.CreateAsync(new IdentityRole(roleName));
             //}
-            var user = await ReadAsync(userName);            
-            var role = await _roleManager.FindByNameAsync(roleName);           
+            var user = await ReadAsync(userName);
+            var role = await _roleManager.FindByNameAsync(roleName);
             if (user != null)
             {
                 if (user.Roles.Count != 0)
@@ -83,13 +90,13 @@ namespace ScavengeRUs.Services
                     {
                         await RemoveUserFromRoleAsync(userName, item);
                     }
-                    
+
                 }
                 user.Roles.Add(role.Name);
                 var result = await _userManager.AddToRoleAsync(user, role.Name);
                 await _db.SaveChangesAsync();
             }
-            
+
         }
         /// <summary>
         /// This remove a user from a role passing the username and rolename
@@ -135,11 +142,12 @@ namespace ScavengeRUs.Services
         public async Task UpdateAsync(string username, ApplicationUser user)
         {
             var userToUpdate = await ReadAsync(username);
-            if(userToUpdate != null)
+            if (userToUpdate != null)
             {
                 userToUpdate.FirstName = user.FirstName;
                 userToUpdate.LastName = user.LastName;
                 userToUpdate.PhoneNumber = user.PhoneNumber;
+                userToUpdate.Carrier = user.Carrier;
                 // await RemoveUserFromRoleAsync(username, userToUpdate.Role);
                 userToUpdate.Roles.Add(user.Roles.First());
                 await AssignUserToRoleAsync(username, user.Roles.First());
@@ -154,7 +162,7 @@ namespace ScavengeRUs.Services
         public async Task DeleteAsync(string username)
         {
             var user = _db.Users.FirstOrDefault(u => u.UserName == username);
-            if( user != null )
+            if (user != null)
             {
                 _db.Remove(user);
                 await _db.SaveChangesAsync();
@@ -186,5 +194,54 @@ namespace ScavengeRUs.Services
             return user!;
         }
 
+        public async Task<List<ApplicationUser>> CreateUsers(string? filePath, string? serverUrl)
+        {
+            var users = new List<ApplicationUser>();
+            // Get the path of the CSV file in the immediate folder
+            filePath = "Services/Users.csv";
+
+            // Read the CSV file
+            string[] csvLines = System.IO.File.ReadAllLines(filePath);
+
+            // Loop through each line in the CSV file and create a new user
+            for (int i = 1; i < csvLines.Length; i++)
+            {
+                // Split the CSV line into an array of values
+                string[] values = csvLines[i].Split(',');
+
+                // Create a new user with the values from the CSV line
+                var user = new ApplicationUser
+                {
+                    FirstName = values[0],
+                    LastName = values[1],
+                    Roles = new List<string>(),
+                    Carrier = Enum.Parse<Carriers>(values[4]),
+                    UserName = values[3],
+                    Email = values[3],
+                    PhoneNumber = values[2],
+                };
+
+                // Find the role by its ID
+                var roleName = "Player";
+                var role = await _roleManager.FindByNameAsync(roleName);
+                var userRole = new IdentityUserRole<string> { UserId = user.Id, RoleId = role.Id };
+                await _db.UserRoles.AddAsync(userRole);
+                var hunt = await _db.Hunts.FindAsync(14);
+                user.Hunt = hunt;
+                users.Add(user);
+                var accessCode = $"{user.PhoneNumber}/{hunt.HuntName}";
+                var userAccessCode = new AccessCode { Code = accessCode, HuntId = hunt.Id };
+                user.AccessCode = userAccessCode;
+                await _functions.SendEmail(
+                    user.Email, 
+                    "Welcome to the ETSU Scavenger Hunt!", 
+                    $"Hi {user.FirstName} {user.LastName} welcome to the ETSU Scavenger Hunt game! " +
+                    $"To get started please go to {serverUrl} and login with the access code: {user.PhoneNumber}/{hunt.HuntName}");
+            }
+            _db.ApplicationUsers.AddRange(users);
+            await _db.SaveChangesAsync();
+            return users;
+
+        }
     }
 }

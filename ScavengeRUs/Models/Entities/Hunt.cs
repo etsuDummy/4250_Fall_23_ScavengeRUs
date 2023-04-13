@@ -11,7 +11,13 @@ namespace ScavengeRUs.Models.Entities
     /// </summary>
     public class Hunt
     {
+        public Hunt()
+        {
+            CreationDate = DateTime.Now;
+        }
         public int Id { get; set; }
+        public DateTime CreationDate { get; set; }
+
         [DisplayName("Title"), Required]
         public string? HuntName { get; set; }
         [Required]

@@ -215,5 +215,17 @@ namespace ScavengeRUs.Services
             await _db.SaveChangesAsync();
 
         }
+
+        public void Update(int oldId, Hunt hunt)
+        {
+            var existingHunt = _db.Hunts.Find(oldId);
+
+            existingHunt.HuntName = hunt.HuntName;
+            existingHunt.Theme = hunt.Theme;
+            existingHunt.StartDate = hunt.StartDate;
+            existingHunt.EndDate = hunt.EndDate;
+
+            _db.SaveChanges();
+        }
     }
 }
