@@ -3,13 +3,20 @@ BucHunt-Master
 	ScavengeRUs
 		//Folder
 		ScavengeRUS.db-wal
+			//Write ahead logging file
+			A file that allows multiple edits to be handled at once. A part of the SQLite functionality. See documentation for more details. 
 		ScavengeRUS.db-shm
+			//Shared memory file
+			A block of memory used for WAL operations. See documentation for more details. 
 		ScavengRUS
 			//Data Base file
+			File containing the actual database, including data. Open with SQLite to see it. If you need more details, documentation is below.
 		appsetting.Development
 			//JSON
+			Subfile of appsettings containing the logging information
 		appsettings
 			//JSON
+			Contains various bits of information used by the program, including the email address. 
 		Program.cs
 			//C# Source file
 			Libraries:
@@ -18,8 +25,15 @@ BucHunt-Master
 				ScavengeRUs.Data
 				ScavengeRUs.Models.Entities
 				ScavengeRUs.Services
+				Microsoft.AspNetCore.Http
+			Sets up the program and runs it. This is the starting point of the application.
 		Readme
 			//Text Document
+			Old read me, just says where to find HTML and formatting stuff, and how to access the database. 
+			To make your life easier: 
+				HTML is in Views
+				CSS, images, and Javascript are all in wwwroot
+				Use SQLite to look at the database (sqlitebrowser.org)
 		ScavengeRUs.csproj
 			//VS file
 		obj
@@ -216,3 +230,11 @@ System: https://learn.microsoft.com/en-us/dotnet/api/system?view=net-8.0
 System.Runtime.InteropServices: https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices?view=net-7.0
 
 System.Security.Claims: https://learn.microsoft.com/en-us/dotnet/api/system.security.claims?view=net-7.0 
+
+Format Documentation: 
+
+SQLite DB format: https://www.sqlite.org/fileformat2.html 
+
+SQLite WAL format: https://www.sqlite.org/wal.html 
+
+SQLite SHM format: https://www.sqlite.org/tempfiles.html 
