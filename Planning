@@ -71,11 +71,11 @@ Tasks:
 Tasks:
   Remove "Hello player" as a link
   Remove Add hunt functionality to simplify the game down to a single hunt 
-  Create email to text functionality
-  Prevent multiple inputs on batch creation
-  Prevent duplicated users
-  Popup message on batch completiong saying failure/success
-  Add details to the created batch popup on how many accounts were created
+  Create email to text functionality ✓
+  Prevent multiple inputs on batch creation ✓
+  Prevent duplicated users ✓
+  Popup message on batch completiong saying failure/success ✓
+  Add details to the created batch popup on how many accounts were created ✓
   Functionality to send specific users access codes 
 
   
@@ -94,7 +94,7 @@ Secondary Objective Options
     * Remove ability to edit completed hunt
   A.2.c Custom Invitations
   A.2.f Hunt URLs
-  A.4.d Access Code and Invitation sending
+  A.4.d Access Code and Invitation sending ✓
   Figure out how to get the current solution onto the VM 
   Deploy the solution to the VM 
   Show everyone how to connect to it 
