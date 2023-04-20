@@ -78,6 +78,18 @@ Tasks:
   Add details to the created batch popup on how many accounts were created ✓
   Functionality to send specific users access codes 
 
+Sprint 4:
+Objective: Get the project into a state that makes the next team have an easier time getting into it. This includes documentation in the code as well as outside of the code. 
+I want there to be a good overview of how the project works and the libraries it uses.
+Acceptance Criteria: 
+  Major files and functions documented.
+  Major files documented in external document.
+  Letters created for product owner and Scrum master.
+  GitHub is in a cohesive state.
+Tasks: 
+  Change the name of the hunt
+  Fix the description text for the hunt
+  
   
 Secondary Objective Options
   Test submission status for when a player completes a task
