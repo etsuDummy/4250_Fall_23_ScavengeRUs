@@ -80,7 +80,8 @@ Tasks:
 
 Sprint 4:
 Objective: Get the project into a state that makes the next team have an easier time getting into it. This includes documentation in the code as well as outside of the code. 
-I want there to be a good overview of how the project works and the libraries it uses.
+I want there to be a good overview of how the project works and the libraries it uses. 
+Also: get the projects merged!
 Acceptance Criteria: 
   Major files and functions documented.
   Major files documented in external document.
