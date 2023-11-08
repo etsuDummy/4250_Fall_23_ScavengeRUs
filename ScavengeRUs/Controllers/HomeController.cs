@@ -14,8 +14,8 @@ namespace ScavengeRUs.Controllers
         private readonly IUserRepository _userRepo;
         private readonly ILogger<HomeController> _logger;
 
+        
         /// <summary>
-        /// This doesn't really matter to us
         /// </summary>
         /// <param name="logger"></param>
         public HomeController(ILogger<HomeController> logger, IUserRepository userRepo, SignInManager<ApplicationUser> signInRepo)
@@ -24,19 +24,33 @@ namespace ScavengeRUs.Controllers
             _userRepo = userRepo;
             _logger = logger; 
         }
+
+
         /// <summary>
-        /// This is the landing page for www.localhost.com/Home/Index
+        /// Landing page for localhost
         /// </summary>
         /// <returns></returns>
         public IActionResult Index()
         {
-            return View();      //Right click and go to view to see the HTML or see it in the Views/Home folder in the solution explorer
+            return View(); //Right click and go to view to see the HTML or see it in the Views/Home folder in the solution explorer
         }
+
+
+        /// <summary>
+        /// Landing page for login page
+        /// </summary>
+        /// <returns></returns>
         public IActionResult LogIn()
         {
-            
             return View();
         }
+        
+        
+        /// <summary>
+        /// Landing page for after a user logs in
+        /// </summary>
+        /// <param name="accessCode"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("LogIn")]
         public async Task<IActionResult> LogInConfirmed(AccessCode accessCode)
         {
@@ -53,12 +67,12 @@ namespace ScavengeRUs.Controllers
             await _signInRepo.SignInAsync(user, false);
             return RedirectToAction("ViewTasks", "Hunt", new {id = user.Hunt.Id}); // change to redirect to view of hunts
         }
+
+
         /// <summary>
-        /// This is the landing page for www.localhost.com/Home/Privacy
-        /// Only people that are "Admin" can view this 
+        /// Landing page for privacy policy
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles ="Admin")]
         public IActionResult Privacy()
         {
             return View();
