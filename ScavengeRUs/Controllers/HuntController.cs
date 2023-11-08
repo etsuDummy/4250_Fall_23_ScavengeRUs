@@ -255,7 +255,7 @@ namespace ScavengeRUs.Controllers
                         item.Completed = "Not completed";
                     }
                 }
-            return View(tasks);
+            return View(tasks.OrderByDescending(o => o.Completed));
             
         }
         /// <summary>
