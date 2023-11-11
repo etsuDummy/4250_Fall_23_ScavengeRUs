@@ -36,7 +36,11 @@ namespace ScavengeRUs.Controllers
             ViewBag.HuntNameSortParm = sortOrder == "hunt_name" ? "hunt_name_desc" : "hunt_name";
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
             ViewBag.EndDateSortParm = sortOrder == "end_date" ? "end_date_desc" : "end_date";
+            ViewBag.PlayerSortParm = sortOrder == "player" ? "player_desc" : "player";
+
             var hunts = await _huntRepo.ReadAllAsync();
+
+            //Sorting functionality for columns on view
             switch(sortOrder)
             {
                 case "creation_date":
@@ -69,10 +73,17 @@ namespace ScavengeRUs.Controllers
                 case "end_date_desc":
                     hunts = hunts.OrderByDescending(h => h.EndDate).ToList();
                     break;
+                case "player":
+                    hunts = hunts.OrderBy(h => h.Players.Count).ToList();
+                    break;
+                case "player_desc":
+                    hunts = hunts.OrderByDescending(h => h.Players.Count).ToList();
+                    break;
                 default:
                     hunts = hunts.OrderBy(h => h.Id).ToList();
                     break;
             }
+
             return View(hunts);
         }
         /// <summary>
