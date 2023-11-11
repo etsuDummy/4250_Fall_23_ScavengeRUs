@@ -31,6 +31,7 @@ namespace ScavengeRUs.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder)
         {
+            //Parameters sent from view determine sort order of the hunts
             ViewBag.CreationDateSortParm = sortOrder == "creation_date" ? "creation_date_desc" : "creation_date";
             ViewBag.StartDateSortParm = sortOrder == "start_date" ? "start_date_desc" : "start_date";
             ViewBag.HuntNameSortParm = sortOrder == "hunt_name" ? "hunt_name_desc" : "hunt_name";
@@ -42,6 +43,7 @@ namespace ScavengeRUs.Controllers
             var hunts = await _huntRepo.ReadAllAsync();
 
             //Sorting functionality for columns on view
+            //There is probably a better way to refactor this sorting functionality, this method was shown in the Microsoft Docs
             switch(sortOrder)
             {
                 case "creation_date":
@@ -63,6 +65,7 @@ namespace ScavengeRUs.Controllers
                     hunts = hunts.OrderByDescending(h => h.HuntName).ToList();
                     break;
                 case "status":
+                    //Sorts by whether the hunt has ended or not
                     hunts = hunts.OrderBy(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
                     break;
                 case "status_desc":
