@@ -48,7 +48,9 @@
                 new { sortOrder = ViewBag.PlayerSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HuntLocations)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.HuntLocations),
+                "Index",
+                new { sortOrder = ViewBag.TasksSortParm })
             </th>
             <th></th>
         </tr>

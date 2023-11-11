@@ -37,6 +37,7 @@ namespace ScavengeRUs.Controllers
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
             ViewBag.EndDateSortParm = sortOrder == "end_date" ? "end_date_desc" : "end_date";
             ViewBag.PlayerSortParm = sortOrder == "player" ? "player_desc" : "player";
+            ViewBag.TasksSortParm = sortOrder == "tasks" ? "tasks_desc" : "tasks";
 
             var hunts = await _huntRepo.ReadAllAsync();
 
@@ -78,6 +79,12 @@ namespace ScavengeRUs.Controllers
                     break;
                 case "player_desc":
                     hunts = hunts.OrderByDescending(h => h.Players.Count).ToList();
+                    break;
+                case "tasks":
+                    hunts = hunts.OrderBy(h => h.HuntLocations.Count).ToList();
+                    break;                
+                case "tasks_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntLocations.Count).ToList();
                     break;
                 default:
                     hunts = hunts.OrderBy(h => h.Id).ToList();
