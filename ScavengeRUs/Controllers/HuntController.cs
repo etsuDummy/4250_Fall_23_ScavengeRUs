@@ -29,9 +29,43 @@ namespace ScavengeRUs.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
+            ViewBag.CreationDateSortParm = sortOrder == "creation_date" ? "creation_date_desc" : "creation_date";
+            ViewBag.StartDateSortParm = sortOrder == "start_date" ? "start_date_desc" : "start_date";
+            ViewBag.HuntNameSortParm = sortOrder == "hunt_name" ? "hunt_name_desc" : "hunt_name";
+            ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
             var hunts = await _huntRepo.ReadAllAsync();
+            switch(sortOrder)
+            {
+                case "creation_date":
+                    hunts = hunts.OrderBy(h => h.CreationDate).ToList();
+                    break;
+                case "creation_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.CreationDate).ToList();
+                    break;
+                case "start_date":
+                    hunts = hunts.OrderBy(h => h.StartDate).ToList();
+                    break;
+                case "start_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.StartDate).ToList();
+                    break;
+                case "hunt_name":
+                    hunts = hunts.OrderBy(h => h.HuntName).ToList();
+                    break;
+                case "hunt_name_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntName).ToList();
+                    break;
+                case "status":
+                    hunts = hunts.OrderBy(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                case "status_desc":
+                    hunts = hunts.OrderByDescending(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                default:
+                    hunts = hunts.OrderBy(h => h.Id).ToList();
+                    break;
+            }
             return View(hunts);
         }
         /// <summary>

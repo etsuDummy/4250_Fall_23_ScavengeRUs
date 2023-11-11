@@ -18,19 +18,27 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.CreationDate), 
+                "Index", 
+                new { sortOrder = ViewBag.CreationDateSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HuntName)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.HuntName),
+                "Index",
+                new { sortOrder = ViewBag.HuntNameSortParm })
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+            <th>                
+                @Html.ActionLink(Html.DisplayNameFor(model => model.StartDate),
+                "Index",
+                new { sortOrder = ViewBag.StartDateSortParm })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
-            <th>
-                Time Remaining
+            <th>              
+                @Html.ActionLink("Time Remaining",
+                "Index",
+                new { sortOrder = ViewBag.StatusSortParm })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Players)
