@@ -33,7 +33,9 @@
                 new { sortOrder = ViewBag.StartDateSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndDate)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.EndDate),
+                "Index",
+                new { sortOrder = ViewBag.EndDateSortParm })
             </th>
             <th>              
                 @Html.ActionLink("Time Remaining",
