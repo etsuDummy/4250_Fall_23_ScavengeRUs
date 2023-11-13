@@ -4,6 +4,7 @@
     {
         ATT,
         Verizon,
-        Tmobile
+        Tmobile,
+        Tracfone
     }
 }

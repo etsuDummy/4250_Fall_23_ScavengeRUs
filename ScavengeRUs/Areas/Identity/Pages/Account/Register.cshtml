@@ -1,5 +1,6 @@
 ﻿@page
 @model RegisterModel
+@using ScavengeRUs.Models.Enums
 @{
     ViewData["Title"] = "Register";
 }
@@ -42,6 +43,17 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
                 <label asp-for="Input.ConfirmPassword"></label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Carrier" class="control-label"></label>
+                <select asp-for="Carrier" class="form-select">
+                    @foreach (var item in Carriers.GetNames(typeof(Carriers)))
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+
+
             </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
             <a class="nav-link text-blue" style="text-align:center" asp-area="Identity" asp-page="/Account/Login">Already have an account? Login here</a>
