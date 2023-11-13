@@ -18,25 +18,39 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.CreationDate), 
+                "Index", 
+                new { sortOrder = ViewBag.CreationDateSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HuntName)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.HuntName),
+                "Index",
+                new { sortOrder = ViewBag.HuntNameSortParm })
+            </th>
+            <th>                
+                @Html.ActionLink(Html.DisplayNameFor(model => model.StartDate),
+                "Index",
+                new { sortOrder = ViewBag.StartDateSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.EndDate),
+                "Index",
+                new { sortOrder = ViewBag.EndDateSortParm })
+            </th>
+            <th>              
+                @Html.ActionLink("Time Remaining",
+                "Index",
+                new { sortOrder = ViewBag.StatusSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndDate)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.Players),
+                "Index",
+                new { sortOrder = ViewBag.PlayerSortParm })
             </th>
             <th>
-                Time Remaining
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Players)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HuntLocations)
+                @Html.ActionLink(Html.DisplayNameFor(model => model.HuntLocations),
+                "Index",
+                new { sortOrder = ViewBag.TasksSortParm })
             </th>
             <th></th>
         </tr>

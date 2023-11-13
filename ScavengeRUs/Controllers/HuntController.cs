@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ScavengeRUs.Models.Entities;
 using ScavengeRUs.Services;
 using Microsoft.AspNetCore.Identity;
+using ScavengeRUs.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace ScavengeRUs.Controllers
 {
@@ -29,9 +31,71 @@ namespace ScavengeRUs.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
+            //Parameters sent from view determine sort order of the hunts
+            ViewBag.CreationDateSortParm = sortOrder == "creation_date" ? "creation_date_desc" : "creation_date";
+            ViewBag.StartDateSortParm = sortOrder == "start_date" ? "start_date_desc" : "start_date";
+            ViewBag.HuntNameSortParm = sortOrder == "hunt_name" ? "hunt_name_desc" : "hunt_name";
+            ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+            ViewBag.EndDateSortParm = sortOrder == "end_date" ? "end_date_desc" : "end_date";
+            ViewBag.PlayerSortParm = sortOrder == "player" ? "player_desc" : "player";
+            ViewBag.TasksSortParm = sortOrder == "tasks" ? "tasks_desc" : "tasks";
+
             var hunts = await _huntRepo.ReadAllAsync();
+
+            //Sorting functionality for columns on view
+            //There is probably a better way to refactor this sorting functionality, this method was shown in the Microsoft Docs
+            switch(sortOrder)
+            {
+                case "creation_date":
+                    hunts = hunts.OrderBy(h => h.CreationDate).ToList();
+                    break;
+                case "creation_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.CreationDate).ToList();
+                    break;
+                case "start_date":
+                    hunts = hunts.OrderBy(h => h.StartDate).ToList();
+                    break;
+                case "start_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.StartDate).ToList();
+                    break;
+                case "hunt_name":
+                    hunts = hunts.OrderBy(h => h.HuntName).ToList();
+                    break;
+                case "hunt_name_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntName).ToList();
+                    break;
+                case "status":
+                    //Sorts by whether the hunt has ended or not
+                    hunts = hunts.OrderBy(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                case "status_desc":
+                    hunts = hunts.OrderByDescending(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                case "end_date":
+                    hunts = hunts.OrderBy(h => h.EndDate).ToList();
+                    break;
+                case "end_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.EndDate).ToList();
+                    break;
+                case "player":
+                    hunts = hunts.OrderBy(h => h.Players.Count).ToList();
+                    break;
+                case "player_desc":
+                    hunts = hunts.OrderByDescending(h => h.Players.Count).ToList();
+                    break;
+                case "tasks":
+                    hunts = hunts.OrderBy(h => h.HuntLocations.Count).ToList();
+                    break;                
+                case "tasks_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntLocations.Count).ToList();
+                    break;
+                default:
+                    hunts = hunts.OrderBy(h => h.Id).ToList();
+                    break;
+            }
+
             return View(hunts);
         }
         /// <summary>
@@ -255,7 +319,7 @@ namespace ScavengeRUs.Controllers
                         item.Completed = "Not completed";
                     }
                 }
-            return View(tasks);
+            return View(tasks.OrderByDescending(o => o.Completed));
             
         }
         /// <summary>
@@ -317,16 +381,26 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult>  Update(int id)
         {
             var hunt = await _huntRepo.ReadAsync(id);
-
             return View(hunt);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]    // does not work as of now
         public IActionResult Update(int id, Hunt hunt)
         {
-            _huntRepo.Update(id, hunt);
-            return RedirectToAction("Index");
+            if (hunt.EndDate < hunt.StartDate)
+            {
+                ModelState.AddModelError("EndDate", "End date must be equal to or after the start date.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _huntRepo.Update(id, hunt);
+                return RedirectToAction("Index");
+            }
+
+            return View(hunt);
         }
     }
 }
