@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ScavengeRUs.Models.Entities;
 using ScavengeRUs.Services;
 using Microsoft.AspNetCore.Identity;
+using ScavengeRUs.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace ScavengeRUs.Controllers
 {
@@ -379,16 +381,26 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult>  Update(int id)
         {
             var hunt = await _huntRepo.ReadAsync(id);
-
             return View(hunt);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]    // does not work as of now
         public IActionResult Update(int id, Hunt hunt)
         {
-            _huntRepo.Update(id, hunt);
-            return RedirectToAction("Index");
+            if (hunt.EndDate < hunt.StartDate)
+            {
+                ModelState.AddModelError("EndDate", "End date must be equal to or after the start date.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _huntRepo.Update(id, hunt);
+                return RedirectToAction("Index");
+            }
+
+            return View(hunt);
         }
     }
 }
