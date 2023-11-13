@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Framework;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using ScavengeRUs.Attributes;
 
 namespace ScavengeRUs.Models.Entities
 {
@@ -26,7 +27,7 @@ namespace ScavengeRUs.Models.Entities
         public string? InvitationText { get; set; }
         [DisplayName("Start Date/Time"), Required]
         public DateTime StartDate{ get; set; }
-        [DisplayName("End Date/Time"), Required, ScavengeRUs.Attributes.EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]
+        [DisplayName("End Date/Time"), Required, EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]
         public DateTime EndDate { get; set; }
         [DisplayName("Tasks")]
         public ICollection<HuntLocation> HuntLocations { get; set; } = new List<HuntLocation>();  
