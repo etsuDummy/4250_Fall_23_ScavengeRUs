@@ -5,6 +5,7 @@ using ScavengeRUs.Services;
 using Microsoft.AspNetCore.Identity;
 using ScavengeRUs.Attributes;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScavengeRUs.Controllers
 {
@@ -256,6 +257,11 @@ namespace ScavengeRUs.Controllers
                 newUser.AccessCode.Users.Add(newUser);
             }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
+            await Functions.SendEmail(
+                   newUser.Email,
+                   "Welcome to the ETSU Scavenger Hunt!",
+                   $"Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
+                   $"To get started please go to AAAAAAAAHHHHHHHHH and login with the access code: {newUser.PhoneNumber}/{hunt.HuntName}");
             return RedirectToAction("Index");
         }
         /// <summary>

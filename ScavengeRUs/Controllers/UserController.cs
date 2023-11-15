@@ -31,7 +31,7 @@ namespace ScavengeRUs.Controllers
         public UserController(IUserRepository userRepo, IConfiguration configuration)
         {
             _userRepo = userRepo;
-            _functions = new Functions(configuration);
+            Functions.SetConfiguration(configuration);
 
         }
         /// <summary>
