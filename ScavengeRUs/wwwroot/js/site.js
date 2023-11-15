@@ -217,8 +217,12 @@ sideBarClose.addEventListener('click', e => {
                     setTimeout(() => {
                         createTaskModal.hide();
                     }, 1500);
+
                     // Task was completed successfully, refresh the page
-                    window.location.reload();
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);  // Refresh the page after a delay of 1.5 seconds
+                 
 }
                 else {
                     $('#failedMessageArea').html("Incorrect! Try again.");
