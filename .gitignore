@@ -362,5 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-#edit on 11/1/2023 by Nick Sells: ignore the database itself and its related meta data files
-*.db*
+#edit on 11/1/2023 by Nick Sells: ignore the database itself and its related files
+*.db
+*.db-shm
+*.db-wal
