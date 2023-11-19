@@ -304,28 +304,14 @@ namespace ScavengeRUs.Controllers
             var currentUser = await _userRepo.ReadAsync(User.Identity?.Name!);
             var hunt = await _huntRepo.ReadHuntWithRelatedData(huntid);
             ViewData["Hunt"] = hunt;
+            ViewData["CurrentUser"] = currentUser;
             if (hunt == null)
             {
                 return RedirectToAction("Index");
             }
             
             var tasks = await _huntRepo.GetLocations(hunt.HuntLocations);
-                foreach (var item in tasks)
-                {
-                    if (currentUser.TasksCompleted.Count() > 0)
-                    {
-                        var usertask = currentUser.TasksCompleted.FirstOrDefault(a => a.Id == item.Id);
-                        if (usertask != null && tasks.Contains(usertask))
-                        {
-                            item.Completed = "Completed";
-                        }
-                    }
-                    else
-                    {
-                        item.Completed = "Not completed";
-                    }
-                }
-            return View(tasks.OrderByDescending(o => o.Completed));
+            return View(tasks.OrderBy(o => currentUser?.TasksCompleted?.Contains(o)));
             
         }
         /// <summary>

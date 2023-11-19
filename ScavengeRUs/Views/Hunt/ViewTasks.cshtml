@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<ScavengeRUs.Models.Entities.Location>
 @using Microsoft.AspNetCore.Identity
 @{
-    var hunt = (Hunt?)ViewData["Hunt"];
+    var hunt = (Hunt?)ViewData["Hunt"]; // Variable set in HuntController to track the current hunt in view
+    var currentUser = (ApplicationUser?)ViewData["CurrentUser"]; // Variable set in HuntController to track current user
     ViewData["Title"] = "View Players of hunt";
 }
 @{
@@ -158,7 +159,7 @@
                                     <span>Status</span>
                                 </div>
                                 <div class="row" id="taskbody">
-                                    @if (item.Completed == "Completed")
+                                    @if (currentUser?.TasksCompleted?.Contains(item) ?? false)
                                     {
                                         <span id="status" style="color:green">Completed</span>
                                     }
