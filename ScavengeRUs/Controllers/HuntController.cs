@@ -5,6 +5,7 @@ using ScavengeRUs.Services;
 using Microsoft.AspNetCore.Identity;
 using ScavengeRUs.Attributes;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScavengeRUs.Controllers
 {
@@ -256,6 +257,11 @@ namespace ScavengeRUs.Controllers
                 newUser.AccessCode.Users.Add(newUser);
             }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
+            await Functions.SendEmail(
+                   newUser.Email,
+                   "Welcome to the ETSU Scavenger Hunt!",
+                   $"Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
+                   $"To get started please go to AAAAAAAAHHHHHHHHH and login with the access code: {newUser.PhoneNumber}/{hunt.HuntName}");
             return RedirectToAction("Index");
         }
         /// <summary>
@@ -298,28 +304,14 @@ namespace ScavengeRUs.Controllers
             var currentUser = await _userRepo.ReadAsync(User.Identity?.Name!);
             var hunt = await _huntRepo.ReadHuntWithRelatedData(huntid);
             ViewData["Hunt"] = hunt;
+            ViewData["CurrentUser"] = currentUser;
             if (hunt == null)
             {
                 return RedirectToAction("Index");
             }
             
             var tasks = await _huntRepo.GetLocations(hunt.HuntLocations);
-                foreach (var item in tasks)
-                {
-                    if (currentUser.TasksCompleted.Count() > 0)
-                    {
-                        var usertask = currentUser.TasksCompleted.FirstOrDefault(a => a.Id == item.Id);
-                        if (usertask != null && tasks.Contains(usertask))
-                        {
-                            item.Completed = "Completed";
-                        }
-                    }
-                    else
-                    {
-                        item.Completed = "Not completed";
-                    }
-                }
-            return View(tasks.OrderByDescending(o => o.Completed));
+            return View(tasks.OrderBy(o => currentUser?.TasksCompleted?.Contains(o)));
             
         }
         /// <summary>

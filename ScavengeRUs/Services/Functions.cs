@@ -8,13 +8,31 @@ using ScavengeRUs.Services;
 
 public class Functions
 {
-    private readonly IConfiguration _configuration;
-    public Functions(IConfiguration configuration)
-	{
+    /// <summary>
+    /// a set of configurations that aid in the functionality of this class
+    /// typically are set once and do not change
+    /// </summary>
+    private static IConfiguration? _configuration;
+
+
+    /// <summary>
+    /// sets the configuration for the Functions class
+    /// </summary>
+    /// <param name="configuration"></param>
+    public static void SetConfiguration(IConfiguration configuration)
+    {
         _configuration = configuration;
     }
 
-	public async Task SendEmail(string recipientEmail, string subject, string body)
+
+    /// <summary>
+    /// uses the credentials stored in the secrets file to access an email server and send out an email
+    /// </summary>
+    /// <param name="recipientEmail"></param>
+    /// <param name="subject"></param>
+    /// <param name="body"></param>
+    /// <returns></returns>
+	public static async Task SendEmail(string recipientEmail, string subject, string body)
     {
         // Set the environment variable
         string credentialsPath = Path.Combine(Directory.GetCurrentDirectory(), "scrum-bums-042e94718ef6.json");
@@ -40,23 +58,21 @@ public class Functions
         message.Subject = subject;
         message.Body = body;
 
-        try
-        {
-            // Send email
-            client.Send(message);
-        }
-        catch (Exception ex)
-        {
-            // Handle exceptions
-            throw ex;
-        }
+        //TODO: consider try/catch
+        client.Send(message);
     }
 
-    private async Task<string> GetSecretAsync(string secretId)
+
+    /// <summary>
+    /// asychronously fetches secrets
+    /// </summary>
+    /// <param name="secretId"></param>
+    /// <returns></returns>
+    private static async Task<string> GetSecretAsync(string secretId)
     {
-        var client = await SecretManagerServiceClient.CreateAsync();
+        var secretManagerClient = await SecretManagerServiceClient.CreateAsync();
         var secretName = new SecretName("341278893241", secretId);
-        var latestVersion = await client.GetSecretVersionAsync(new GetSecretVersionRequest
+        var latestVersion = await secretManagerClient.GetSecretVersionAsync(new GetSecretVersionRequest
         {
             SecretVersionName = new SecretVersionName(secretName.ProjectId, secretName.SecretId, "latest")
         });
@@ -64,7 +80,7 @@ public class Functions
         {
             Name = latestVersion.SecretVersionName.ToString(),
         };
-        var response = await client.AccessSecretVersionAsync(accessRequest);
+        var response = await secretManagerClient.AccessSecretVersionAsync(accessRequest);
         var passwordBytes = response.Payload.Data;
         string password = passwordBytes.ToStringUtf8();
         return password;

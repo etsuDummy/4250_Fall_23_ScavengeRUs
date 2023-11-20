@@ -25,7 +25,7 @@ namespace ScavengeRUs.Models.Entities
 
         [Display(Name = "Access Code")]
         public string? AccessCode { get; set; }
-        public string? Completed { get; set; }
+        //public string? Completed { get; set; } // Shouldn't need this since it would set the task complete for everyone. The tasks need to be completed per user.
 
         [Display(Name = "QR Code")]
         public string? QRCode { get; set; }

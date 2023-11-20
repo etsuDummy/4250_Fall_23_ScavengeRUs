@@ -12,10 +12,6 @@ namespace ScavengeRUs.Models.Entities
     /// </summary>
     public class Hunt
     {
-        public Hunt()
-        {
-            CreationDate = DateTime.Now;
-        }
         public int Id { get; set; }
         public DateTime CreationDate { get; set; }
 
@@ -34,5 +30,14 @@ namespace ScavengeRUs.Models.Entities
         [DisplayName("Access Code")]
         public ICollection<AccessCode>? AccessCodes { get; set; } = new List<AccessCode>();
         public ICollection<ApplicationUser> Players { get; set; } = new List<ApplicationUser>();
-    }
+
+
+		/// <summary>
+		/// default constructor for hunt
+		/// </summary>
+		public Hunt()
+		{
+			CreationDate = DateTime.Now;
+		}
+	}
 }
