@@ -369,3 +369,5 @@ FodyWeavers.xsd
 
 #edit on 11/25/2023 by Grant Scutt: add rule to ignore gmail.txt file
 gmail.txt
+/ScavengeRUs/gmail.txt
+/ScavengeRUs/gmail.txt
