@@ -110,7 +110,8 @@ namespace ScavengeRUs.Services
             return await _db.Location.FirstOrDefaultAsync(a => a.Id == id);
         }
         /// <summary>
-        /// This method returns a list of locations passing a list of HuntLocation objects (aka the weak entity since its a many to many relationship)
+        /// This method returns a list of locations passing a list of HuntLocation objects 
+        /// (aka the weak entity since its a many to many relationship)
         /// </summary>
         /// <param name="huntLocations"></param>
         /// <returns></returns>
@@ -184,7 +185,8 @@ namespace ScavengeRUs.Services
             }
         }
         /// <summary>
-        /// This method removes the relationship between a hunt, but doesnt delete the user passing a username and huntId.
+        /// This method removes the relationship between a hunt, but doesnt delete the user passing 
+        /// a username and huntId.
         /// </summary>
         /// <param name="username"></param>
         /// <param name="huntId"></param>
@@ -202,7 +204,8 @@ namespace ScavengeRUs.Services
             }
         }
         /// <summary>
-        /// This method removes the task from a hunt. Deletes the relationship from the HuntLocation table
+        /// This method removes the task from a hunt. Deletes the relationship from the 
+        /// HuntLocation table
         /// </summary>
         /// <param name="id"></param>
         /// <param name="huntid"></param>
