@@ -21,6 +21,9 @@ namespace ScavengeRUs.Models.Entities
         public string? Theme { get; set; }
         [DisplayName("Invitation Text"), Required]
         public string? InvitationText { get; set; }
+
+        [DisplayName("Invitation Body Text")]
+        public string? InvitationBodyText { get; set; }
         [DisplayName("Start Date/Time"), Required]
         public DateTime StartDate{ get; set; }
         [DisplayName("End Date/Time"), Required, EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]
