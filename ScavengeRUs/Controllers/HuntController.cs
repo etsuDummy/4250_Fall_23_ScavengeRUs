@@ -256,12 +256,19 @@ namespace ScavengeRUs.Controllers
                 };
                 newUser.AccessCode.Users.Add(newUser);
             }
+            //Set default value for email body
+            string emailBody = $"<div>Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
+                   $"To get started please go to the BucHunt website and login with the access code: {newUser.AccessCode.Code}</div>";
+            if(hunt.InvitationBodyText is not null)
+            {
+                var userStr = hunt.InvitationBodyText.Replace("%user", $"{newUser.FirstName} {newUser.LastName}");
+                emailBody = userStr.Replace("%code", $"{newUser.AccessCode.Code}");
+            }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
             await Functions.SendEmail(
                    newUser.Email,
-                   "Welcome to the ETSU Scavenger Hunt!",
-                   $"Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
-                   $"To get started please go to AAAAAAAAHHHHHHHHH and login with the access code: {newUser.PhoneNumber}/{hunt.HuntName}");
+                   hunt.InvitationText ?? "Welcome to the ETSU Scavenger Hunt!",
+                   emailBody);
             return RedirectToAction("Index");
         }
         /// <summary>
