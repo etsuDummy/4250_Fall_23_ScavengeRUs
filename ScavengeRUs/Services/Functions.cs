@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
-using Google.Cloud.SecretManager.V1;
 using ScavengeRUs.Services;
 using System.Net;
 using ScavengeRUs.Models.Enums;
