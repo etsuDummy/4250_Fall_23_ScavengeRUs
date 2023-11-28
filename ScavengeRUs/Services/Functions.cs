@@ -5,15 +5,34 @@ using Microsoft.Extensions.Configuration;
 using Google.Cloud.SecretManager.V1;
 using ScavengeRUs.Services;
 using System.Net;
+using ScavengeRUs.Models.Enums;
 
+/// <summary>
+/// a class full of miscellaneous helper functions that we have yet to find a better place for
+/// </summary>
 public class Functions
 {
+	/// <summary>
+	/// most major cell service providers provide a way to send SMS via email.
+	/// just send an email to [phone number]@[carrier gateway url]
+	/// and the owner of that phone number will recieve your email as a text message
+	/// </summary>
+	private static readonly Dictionary<Carrier, string> _carrierToGateway = new Dictionary<Carrier, string>{
+        { Carrier.ATT, "txt.att.net" },
+        { Carrier.BoostMobile, "sms.myboostmobile.com" },
+        { Carrier.Cricket, "sms.cricketwireless.net" },
+		{ Carrier.Sprint, "messaging.sprintpcs.net" },
+		{ Carrier.StraightTalk, "txt.att.net" },
+		{ Carrier.TMobile, "tmomail.net" },
+        { Carrier.TracFone, "txt.att.net" },
+        { Carrier.Verizon, "vtext.com" },
+        { Carrier.VirginMobile, "vmobl.com" }
+    };
+
     /// <summary>
-    /// a set of configurations that aid in the functionality of this class
-    /// typically are set once and do not change
+    /// a set of key-value pairs to track settings to control the behaviour of this class
     /// </summary>
     private static IConfiguration? _configuration;
-
 
     /// <summary>
     /// sets the configuration for the Functions class
@@ -22,7 +41,16 @@ public class Functions
     public static void SetConfiguration(IConfiguration configuration)
     {
         _configuration = configuration;
-    }
+		// NOTE: this function is never used, consider removing
+		throw new NotImplementedException();
+	}
+
+
+    // these fields are configurable values for our 
+    public static readonly string _applicationEmailAddress = "etsubuchunt98@gmail.com";
+    public static readonly string smtpURL = "smtp.gmail.com";
+    public static readonly int smtpPort = 587;
+    public static readonly string secretsFileName = "gmail.txt";
 
 
     /// <summary>
@@ -34,82 +62,43 @@ public class Functions
     /// <returns></returns>
 	public static async Task SendEmail(string recipientEmail, string subject, string body)
     {
+        // our SMTP server is tied to an gmail account and sends emails on behalf of this account.
+        // we keep the password in a file by itself not tracked by source control. if you are part
+        // of the next group of SE1 students and need the login info, please contact
+        // either SCUTTW@ETSU.EDU, or grantscutt2@gmail.com, preferably from a school account
+        string secretsFilePath = Path.Combine(Directory.GetCurrentDirectory(), secretsFileName);
+        string emailPassword = File.ReadAllText(secretsFilePath).Trim();
 
-            // Read the password from the text file
-            //NOTE: If you are part of the next group of SE1 students and need the login info,
-            //please contact either SCUTTW@ETSU.EDU, or grantscutt2@gmail.com, preferably from a school account
-            string passwordFilePath = Path.Combine(Directory.GetCurrentDirectory(), "gmail.txt");
-            string emailPassword = File.ReadAllText(passwordFilePath).Trim();
-
-            // Configure SMTP client
-            using (SmtpClient client = new SmtpClient("smtp.gmail.com", 587))
-            {
-                client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential("etsubuchunt98@gmail.com", emailPassword);
-                client.EnableSsl = true;
+        // Configure SMTP client
+        using (SmtpClient client = new SmtpClient(smtpURL, smtpPort))
+        {
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(_applicationEmailAddress, emailPassword);
+            client.EnableSsl = true;
 
             // Create email message
-            using (MailMessage message = new MailMessage("etsubuchunt98@gmail.com", recipientEmail))
-                {
-                    message.Subject = subject;
-                    message.Body = body;
-                    message.IsBodyHtml = true;
+            using (MailMessage message = new MailMessage(_applicationEmailAddress, recipientEmail))
+            {
+                message.Subject = subject;
+                message.Body = body;
+                message.IsBodyHtml = true;
 
-                    // Send email
-                    client.Send(message);
-                }
+                // NOTE: can throw SmtpException, but we don't really know what to do if it does, so we don't catch it
+                client.Send(message);
             }
-            #region Google Secrets Manager Code (not currently in use)
-            // Set the environment variable
-            //string credentialsPath = Path.Combine(Directory.GetCurrentDirectory(), "scrum-bums-042e94718ef6.json");
-            //Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialsPath);
-
-            //// Get email settings
-            //string emailFrom = _configuration.GetValue<string>("EmailSettings:EmailFrom");
-            //// Use the Secret Manager API to get the email password
-            //string password = GetSecretAsync("etsuscavengerhuntemail").Result;
-
-            //Console.WriteLine(emailFrom);
-            //Console.WriteLine(password);
-
-            //// Configure SMTP client
-            //SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            //client.EnableSsl = true;
-            //client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            //client.UseDefaultCredentials = false;
-            //client.Credentials = new System.Net.NetworkCredential(emailFrom, password);
-
-            //// Create email message
-            //MailMessage message = new MailMessage(emailFrom, recipientEmail);
-            //message.Subject = subject;
-            //message.Body = body;
-
-            ////TODO: consider try/catch
-            //client.Send(message);
+        }
+	}
 
 
-
-            ///// <summary>
-            ///// asychronously fetches secrets
-            ///// </summary>
-            ///// <param name="secretId"></param>
-            ///// <returns></returns>
-            //private static async Task<string> GetSecretAsync(string secretId)
-            //{
-            //    var secretManagerClient = await SecretManagerServiceClient.CreateAsync();
-            //    var secretName = new SecretName("341278893241", secretId);
-            //    var latestVersion = await secretManagerClient.GetSecretVersionAsync(new GetSecretVersionRequest
-            //    {
-            //        SecretVersionName = new SecretVersionName(secretName.ProjectId, secretName.SecretId, "latest")
-            //    });
-            //    var accessRequest = new AccessSecretVersionRequest
-            //    {
-            //        Name = latestVersion.SecretVersionName.ToString(),
-            //    };
-            //    var response = await secretManagerClient.AccessSecretVersionAsync(accessRequest);
-            //    var passwordBytes = response.Payload.Data;
-            //    string password = passwordBytes.ToStringUtf8();
-            //    return password;
+	/// <summary>
+    /// sends an email to a phone number to be recieved as SMS
+	/// </summary>
+	/// <param name="carrier"></param>
+	/// <param name="recipientPhNumber"></param>
+	/// <param name="body"></param>
+	/// <returns></returns>
+	public static async Task SendSMS(Carrier carrier, string recipientPhNumber, string body) {
+        string recipientAddress = $"{recipientPhNumber}@{_carrierToGateway[carrier]}";
+        await SendEmail(recipientAddress, "", body);
     }
-    #endregion
 }

@@ -63,7 +63,7 @@ namespace ScavengeRUs.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string ReturnUrl { get; set; }
-        public Carriers Carrier { get; set; }
+        public Carrier Carrier { get; set; }
         
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -111,7 +111,7 @@ namespace ScavengeRUs.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Carrier")]
-            public Carriers Carrier { get; set; }
+            public Carrier Carrier { get; set; }
         }
 
 

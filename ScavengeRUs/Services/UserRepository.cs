@@ -245,7 +245,7 @@ namespace ScavengeRUs.Services
                     FirstName = values[0],
                     LastName = values[1],
                     Roles = new List<string>(),
-                    Carrier = Enum.Parse<Carriers>(values[4]),
+                    Carrier = Enum.Parse<Carrier>(values[4]),
                     UserName = values[3],
                     Email = values[3],
                     PhoneNumber = values[2],
