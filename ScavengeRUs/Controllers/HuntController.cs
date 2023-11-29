@@ -257,11 +257,19 @@ namespace ScavengeRUs.Controllers
                 newUser.AccessCode.Users.Add(newUser);
             }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
-            await Functions.SendEmail(
-                   newUser.Email,
-                   "Welcome to the ETSU Scavenger Hunt!",
-                   $"Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
-                   $"To get started please go to AAAAAAAAHHHHHHHHH and login with the access code: {newUser.PhoneNumber}/{hunt.HuntName}");
+
+            string subject = "Welcome to the ETSU Scavenger Hunt!";
+            string body =
+				$"Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game!\n" +
+				$"To get started please go to {"[[PUT THE LINK HERE]]"} and login with the access code: {newUser.PhoneNumber}/{hunt.HuntName}";
+
+			await Functions.SendEmail(newUser.Email, subject, body);
+
+            //Nick Sells, 11/29/2023: get this value from the user, instead of just hardcoding in verizon
+            //we have hard coded in verizon because thats what we all have
+            newUser.Carrier = Models.Enums.Carrier.Verizon;
+            await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{body}");
+                   
             return RedirectToAction("Index");
         }
         /// <summary>
