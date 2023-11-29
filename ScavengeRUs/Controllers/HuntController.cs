@@ -256,19 +256,26 @@ namespace ScavengeRUs.Controllers
                 };
                 newUser.AccessCode.Users.Add(newUser);
             }
+            
             //Set default value for email body
             string emailBody = $"<div>Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
                    $"To get started please go to the BucHunt website and login with the access code: {newUser.AccessCode.Code}</div>";
+            
             if(hunt.InvitationBodyText is not null)
             {
                 var userStr = hunt.InvitationBodyText.Replace("%user", $"{newUser.FirstName} {newUser.LastName}");
                 emailBody = userStr.Replace("%code", $"{newUser.AccessCode.Code}");
             }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
-            await Functions.SendEmail(
-                   newUser.Email,
-                   hunt.InvitationText ?? "Welcome to the ETSU Scavenger Hunt!",
-                   emailBody);
+
+            string subject = hunt.InvitationText ?? "Welcome to the ETSU Scavenger Hunt!";
+
+			await Functions.SendEmail(newUser.Email, subject, emailBody);
+
+            //Nick Sells, 11/29/2023: get this value from the user, instead of just hardcoding in verizon
+            //we have hard coded in verizon because thats what we all have
+            newUser.Carrier = Models.Enums.Carrier.Verizon;
+            await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{body}");
             return RedirectToAction("Index");
         }
         /// <summary>
