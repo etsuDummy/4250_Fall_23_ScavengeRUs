@@ -7,13 +7,9 @@ using ScavengeRUs.Services;
 using System;
 using System.Security.Claims;
 using System.IO;
-using Microsoft.VisualBasic.FileIO;
-
-
 
 namespace ScavengeRUs.Controllers
 {
-
     /// <summary>
     /// Anything in this controller (www.localhost.com/users) can only be viewed by Admin
     /// </summary>
@@ -21,8 +17,8 @@ namespace ScavengeRUs.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepo;
-        private readonly Functions _functions;
         string defaultPassword = "Etsupass12!";
+
 
         /// <summary>
         /// This is the dependecy injection for the User Repository that connects to the database
@@ -32,8 +28,9 @@ namespace ScavengeRUs.Controllers
         {
             _userRepo = userRepo;
             Functions.SetConfiguration(configuration);
-
         }
+        
+        
         /// <summary>
         /// This is the landing page for www.localhost.com/user/manage aka "Admin Portal"
         /// </summary>
@@ -53,6 +50,8 @@ namespace ScavengeRUs.Controllers
 
             return View(searchResults);
         }
+        
+        
         /// <summary>
         /// This is the HtmlGet landing page for editing a User
         /// </summary>
@@ -65,6 +64,8 @@ namespace ScavengeRUs.Controllers
             var user = await _userRepo.ReadAsync(username);
             return View(user);
         }
+        
+        
         /// <summary>
         /// This is the method that executes when hitting the submit button on a edit user form.
         /// </summary>
@@ -80,6 +81,8 @@ namespace ScavengeRUs.Controllers
             }
             return View(user);
         }
+        
+        
         /// <summary>
         /// This is the landing page to delete a user aka "Are you sure you want to delete user X?"
         /// </summary>
@@ -94,6 +97,8 @@ namespace ScavengeRUs.Controllers
             }
             return View(user);
         }
+        
+        
         /// <summary>
         /// This is the method that gets executed with hitting submit on deleteing a user
         /// </summary>
@@ -106,6 +111,8 @@ namespace ScavengeRUs.Controllers
             await _userRepo.DeleteAsync(username);
             return RedirectToAction("Manage");
         }
+        
+        
         /// <summary>
         /// This is the landing page for viewing the details of a user (www.localhost.com/user/details/{username}
         /// </summary>
@@ -117,15 +124,18 @@ namespace ScavengeRUs.Controllers
 
             return View(user);
         }
+
+
         /// <summary>
         /// This is the landing page to create a new user from the admin portal
         /// </summary>
         /// <returns></returns>
-
         public IActionResult Create()
         {
             return View();
         }
+
+
         /// <summary>
         /// This is the method that is executed when hitting submit on creating a user
         /// </summary>
@@ -143,6 +153,8 @@ namespace ScavengeRUs.Controllers
             return View(user);
             
         }
+
+
         /// <summary>
         /// This is the profile page for a user /user/profile/
         /// </summary>
@@ -154,13 +166,19 @@ namespace ScavengeRUs.Controllers
             return View(currentUser);
         }
 
+
+        /// <summary>
+        /// this is the batch create users feature
+        /// TODO: diagnose the crash this causes
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="serverUrl"></param>
+        /// <returns></returns>
         public async Task<IActionResult> CreateUsers(string? filePath, string? serverUrl)
         {
             filePath = "Services/Users.csv";
             serverUrl = $"{Request.Scheme}://{Request.Host}";
             await _userRepo.CreateUsers(filePath, serverUrl);
-
-            
 
             // Redirect to the Index action of the UsersController
             return RedirectToAction("Manage");

@@ -26,8 +26,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="InvitationText" class="control-label"></label>
-                <input asp-for="InvitationText" required class="form-control" />
+                <input asp-for="InvitationText" required class="form-control" placeholder="Enter header text for email.."/>
                 <span asp-validation-for="InvitationText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InvitationBodyText" class="control-label"></label>
+                <div>Use %user to refer to the user's name, and %code to refer to their access code</div>
+                <textarea asp-for="InvitationBodyText" class="form-control" placeholder="Optional: Enter html body or plain text for the email.."></textarea>
             </div>
             <div class="form-group">
                 <label asp-for="Theme" class="control-label"></label>

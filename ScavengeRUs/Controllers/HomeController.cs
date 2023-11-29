@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CommunityToolkit.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ScavengeRUs.Models;
@@ -54,19 +55,22 @@ namespace ScavengeRUs.Controllers
         [HttpPost, ActionName("LogIn")]
         public async Task<IActionResult> LogInConfirmed(AccessCode accessCode)
         {
-            if (accessCode.Code == null)
-            {
-                return View("Error", new ErrorViewModel() { Text = "Enter a valid access code." }); 
-                    
-            }
+            // Checks to see if access code is null and if it is tells user to enter one
+            Guard.IsNotNull(accessCode);
+
             var user = await _userRepo.FindByAccessCode(accessCode.Code!);
             if (user == null)
             {
-                return View("Error", new ErrorViewModel() { Text = "Enter a valid access code." });
+                // Add an error message to the ViewBag or ModelState
+                ViewBag.ErrorMessage = "Invalid Access Code!";
+                // Return to the login view, potentially passing back the access code for user convenience
+                return View("Login", accessCode);
             }
+            // If access code is correct signs in user and redirects to hunt page
             await _signInRepo.SignInAsync(user, false);
-            return RedirectToAction("ViewTasks", "Hunt", new {id = user.Hunt.Id}); // change to redirect to view of hunts
+            return RedirectToAction("ViewTasks", "Hunt", new { id = user.Hunt.Id });
         }
+
 
 
         /// <summary>

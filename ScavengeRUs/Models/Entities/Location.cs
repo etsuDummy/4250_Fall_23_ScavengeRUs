@@ -10,6 +10,11 @@ namespace ScavengeRUs.Models.Entities
     /// </summary>
     public class Location
     {
+        /// <summary>
+        /// This is the primary key for a location aka task when creating a location aka task outside of 
+        /// a hunt it works fine when a task is created inside a hunt it crashes because it
+        /// inserts the hunt id as the location id 
+        /// </summary>
         [Key]
         public int Id { get; set; }
         [Required]
@@ -25,7 +30,8 @@ namespace ScavengeRUs.Models.Entities
 
         [Display(Name = "Access Code")]
         public string? AccessCode { get; set; }
-        //public string? Completed { get; set; } // Shouldn't need this since it would set the task complete for everyone. The tasks need to be completed per user.
+        //public string? Completed { get; set; } // Shouldn't need this since it would set the task
+        //complete for everyone. The tasks need to be completed per user.
 
         [Display(Name = "QR Code")]
         public string? QRCode { get; set; }
