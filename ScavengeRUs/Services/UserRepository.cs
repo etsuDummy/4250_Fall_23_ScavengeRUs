@@ -220,6 +220,8 @@ namespace ScavengeRUs.Services
         
         /// <summary>
         /// creates a batch of users all at once using contact info stored in a CSV file at the specified file path
+        /// NOTE: THIS METHOOD IS IMPLIMENTED AND DOES WORK. THERE'S JUST *NO* VISUAL FEEDBACK THAT IT DOES
+        /// **THE HARD CODED TESST FILE HAS REAL PEOPLES EMAILS AND NNUMBERS. IF YOU PLAN TO TEST THIS, MAKE YOUR OWN FILE!!**
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="serverUrl"></param>
@@ -267,6 +269,8 @@ namespace ScavengeRUs.Services
                     "Welcome to the ETSU Scavenger Hunt!", 
                     $"Hi {user.FirstName} {user.LastName} welcome to the ETSU Scavenger Hunt game! " +
                     $"To get started please go to {serverUrl} and login with the access code: {user.PhoneNumber}/{hunt.HuntName}");
+
+                Console.WriteLine("Batch created users");
             }
             _db.ApplicationUsers.AddRange(users);
             await _db.SaveChangesAsync();
