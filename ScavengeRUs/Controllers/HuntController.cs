@@ -275,7 +275,7 @@ namespace ScavengeRUs.Controllers
             //Nick Sells, 11/29/2023: get this value from the user, instead of just hardcoding in verizon
             //we have hard coded in verizon because thats what we all have
             newUser.Carrier = Models.Enums.Carrier.Verizon;
-            await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{body}");
+            await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{emailBody}");
             return RedirectToAction("Index");
         }
         /// <summary>
