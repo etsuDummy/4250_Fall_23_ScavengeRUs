@@ -1,4 +1,8 @@
 ﻿namespace ScavengeRUs.Models.Enums
 {
-         public enum Roles { Player, Admin };
+	public enum Roles
+	{
+		Player,
+		Admin
+	};
 }

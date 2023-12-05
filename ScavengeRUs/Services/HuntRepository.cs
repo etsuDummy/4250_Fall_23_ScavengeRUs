@@ -14,11 +14,19 @@ namespace ScavengeRUs.Services
         private readonly ApplicationDbContext _db;
         private readonly IUserRepository _userRepo;
 
+
+        /// <summary>
+        /// basic constructor to set the properties
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="userRepo"></param>
         public HuntRepository(ApplicationDbContext db, IUserRepository userRepo)
         {
             _db = db;           //Database injection
             _userRepo = userRepo;   //User repo injection
         }
+        
+        
         /// <summary>
         /// This method adds a hunt to the db passing a Hunt object
         /// </summary>
@@ -30,6 +38,8 @@ namespace ScavengeRUs.Services
             await _db.SaveChangesAsync();
             return hunt;
         }
+
+
         /// <summary>
         /// This method reads all hunts from the db and returns a list of hunts
         /// </summary>
@@ -42,6 +52,8 @@ namespace ScavengeRUs.Services
                 .ToListAsync();
             return hunts;
         }
+        
+        
         /// <summary>
         /// This methods returns a hunt passing a huntId
         /// </summary>
@@ -61,9 +73,9 @@ namespace ScavengeRUs.Services
                 return hunt;
             }
             return new Hunt();
-
-
         }
+
+
         /// <summary>
         /// This method delete a hunt from the db passing the huntId
         /// </summary>
@@ -77,29 +89,30 @@ namespace ScavengeRUs.Services
                 _db.Hunts.Remove(hunt);
                 var list = _db.AccessCodes.Where(a => a.HuntId == huntId);
                 foreach (var item in list)
-                {
-                _db.AccessCodes.Remove(item);
-
-                }
+                    _db.AccessCodes.Remove(item);
+   
                 await _db.SaveChangesAsync();
             }
         }
+
+
         /// <summary>
         /// This method is similar to the ReadAsync, but it includes the players and access codes associated with a hunt. This is nessesary becasue of the way the database is set up with the foreign keys
         /// </summary>
         /// <param name="huntId"></param>
         /// <returns></returns>
         public async Task<Hunt> ReadHuntWithRelatedData(int huntId)
-        {
-            
-                var hunts = await _db.Hunts
+        {    
+            var hunts = await _db.Hunts
                 
-                .Include(p => p.Players)
-                .ThenInclude(p => p.AccessCode)
-                .Include(p => p.HuntLocations)
-                .ToListAsync();
-                return hunts.FirstOrDefault(a => a.Id == huntId);
+            .Include(p => p.Players)
+            .ThenInclude(p => p.AccessCode)
+            .Include(p => p.HuntLocations)
+            .ToListAsync();
+            return hunts.FirstOrDefault(a => a.Id == huntId);
         }
+
+
         /// <summary>
         /// This method read a location from the db passing the id
         /// </summary>
@@ -109,6 +122,8 @@ namespace ScavengeRUs.Services
         {
             return await _db.Location.FirstOrDefaultAsync(a => a.Id == id);
         }
+
+
         /// <summary>
         /// This method returns a list of locations passing a list of HuntLocation objects 
         /// (aka the weak entity since its a many to many relationship)
@@ -127,6 +142,8 @@ namespace ScavengeRUs.Services
             return Locations;
 
         }
+
+
         /// <summary>
         /// This returns all locations in the db
         /// </summary>
@@ -134,8 +151,9 @@ namespace ScavengeRUs.Services
         public async Task<ICollection<Location>> GetAllLocations()
         {
             return await _db.Location.ToListAsync();
-
         }
+
+
         /// <summary>
         /// Adds Adds a task(location) to a hunt and creates the relationship in the db
         /// </summary>
@@ -155,6 +173,8 @@ namespace ScavengeRUs.Services
             location.LocationHunts.Add(huntLocation);
             await _db.SaveChangesAsync();
         }
+
+
         /// <summary>
         /// This methods adds a user to a hunt passing the huntId and a user
         /// </summary>
@@ -184,6 +204,8 @@ namespace ScavengeRUs.Services
                 }
             }
         }
+
+
         /// <summary>
         /// This method removes the relationship between a hunt, but doesnt delete the user passing 
         /// a username and huntId.
@@ -203,6 +225,8 @@ namespace ScavengeRUs.Services
                 await _db.SaveChangesAsync();
             }
         }
+
+
         /// <summary>
         /// This method removes the task from a hunt. Deletes the relationship from the 
         /// HuntLocation table
@@ -219,6 +243,12 @@ namespace ScavengeRUs.Services
 
         }
 
+
+        /// <summary>
+        /// updates a row of the hunt table with new info
+        /// </summary>
+        /// <param name="oldId"></param>
+        /// <param name="hunt"></param>
         public void Update(int oldId, Hunt hunt)
         {
             var existingHunt = _db.Hunts.Find(oldId);
