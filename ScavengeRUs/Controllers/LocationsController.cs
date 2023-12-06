@@ -13,7 +13,7 @@ using ScavengeRUs.Services;
 
 namespace ScavengeRUs.Controllers
 {
-     //makes sure that only admin can see this page
+    //makes sure that only admin can see this page
     public class LocationsController : Controller
     {
         private readonly IUserRepository _userRepo;
@@ -32,6 +32,7 @@ namespace ScavengeRUs.Controllers
             _context = context;
         }
 
+    
         /// <summary>
         /// This method maps to the /Locations URL. It shows the table
         /// </summary>
@@ -43,29 +44,25 @@ namespace ScavengeRUs.Controllers
               return View(await _context.Location.ToListAsync());
         }
 
+        
         /// <summary>
         /// This method shows the details of a specific location based on Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Location == null)
-            {
                 return NotFound();
-            }
 
-            var location = await _context.Location
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var location = await _context.Location.FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
-            {
                 return NotFound();
-            }
 
             return View(location);
         }
+
 
         /// <summary>
         /// This is the page that will be shown when the admin want to create a new location from the 
@@ -78,6 +75,7 @@ namespace ScavengeRUs.Controllers
         {
             return View();
         }
+
 
         /// <summary>
         /// This method will be called when the admin submits the newly created location
@@ -94,13 +92,13 @@ namespace ScavengeRUs.Controllers
                 _context.Add(location);
                 await _context.SaveChangesAsync();
                 if (huntid != 0)
-                {
                     return RedirectToAction("ManageTasks", "Hunt", new { id = huntid });
-                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(location);
         }
+
 
         /// <summary>
         /// This is the page that will be shown when the admin attempts to edit a location
@@ -112,18 +110,16 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Location == null)
-            {
                 return NotFound();
-            }
 
             var location = await _context.Location.FindAsync(id);
             if (location == null)
-            {
                 return NotFound();
-            }
+
             return View(location);
         }
 
+        
         /// <summary>
         /// This method will be called when the admin submits the edit to the location from the previous
         /// method
@@ -137,9 +133,7 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,HuntId,Place,Lat,Lon,Task,AccessCode,QRCode,Answer")] Location location)
         {
             if (id != location.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -151,42 +145,34 @@ namespace ScavengeRUs.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!LocationExists(location.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(location);
         }
 
+
         /// <summary>
         /// This page will be shown when the admin attempts to delete a location from the site
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Location == null)
-            {
                 return NotFound();
-            }
 
-            var location = await _context.Location
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var location = await _context.Location.FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
-            {
                 return NotFound();
-            }
 
             return View(location);
         }
+
 
         /// <summary>
         /// This method will activate when the admin submits the delete action on a location
@@ -212,6 +198,7 @@ namespace ScavengeRUs.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        
         /// <summary>
         /// This method checks to make sure that a Location row exists in the database
         /// </summary>
@@ -221,6 +208,8 @@ namespace ScavengeRUs.Controllers
         {
           return _context.Location.Any(e => e.Id == id);
         }
+
+
         /// <summary>
         /// This method validates an answer for a task. Used by an AJAX call from the hunt page. See site.js
         /// </summary>

@@ -27,6 +27,8 @@ namespace ScavengeRUs.Controllers
             _userRepo = userRepo;
             _huntRepo = HuntRepo;
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/index Returns a list of all hunts
         /// </summary>
@@ -99,6 +101,8 @@ namespace ScavengeRUs.Controllers
 
             return View(hunts);
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/create This is the get method for creating a hunt
         /// </summary>
@@ -108,6 +112,8 @@ namespace ScavengeRUs.Controllers
         {
             return View();
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/create This is the post method for creating a hunt
         /// </summary>
@@ -135,14 +141,12 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Details([Bind(Prefix ="Id")]int huntId)
         {
             if (huntId == 0)
-            {
                 return RedirectToAction("Index");
-            }
+
             var hunt = await _huntRepo.ReadAsync(huntId);
             if (hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
+
             return View(hunt);
         }
         /// <summary>
@@ -154,16 +158,16 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Delete([Bind(Prefix = "Id")]int huntId)
         {
             if (huntId == 0)
-            {
                 return RedirectToAction("Index");
-            }
+
             var hunt = await _huntRepo.ReadAsync(huntId);
             if (hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
+
             return View(hunt);
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/delete/{huntId} This is the post method for deleteing a hunt.
         /// </summary>
@@ -176,6 +180,8 @@ namespace ScavengeRUs.Controllers
             await _huntRepo.DeleteAsync(huntId);
             return RedirectToAction("Index");
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/viewplayers/{huntId} Returns a list of all players in a specified hunt
         /// </summary>
@@ -187,12 +193,12 @@ namespace ScavengeRUs.Controllers
             var hunt = await _huntRepo.ReadHuntWithRelatedData(huntId);
             ViewData["Hunt"] = hunt;
             if(hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
             
             return View(hunt.Players);
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/addplayertohunt{huntid} Get method for adding a player to a hunt. 
         /// </summary>
@@ -206,6 +212,8 @@ namespace ScavengeRUs.Controllers
             return View();
             
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/addplayertohunt{huntid} Post method for the form submission. This creates a user and assigns the access code for the hunt. 
         /// </summary>
@@ -278,6 +286,8 @@ namespace ScavengeRUs.Controllers
             await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{emailBody}");
             return RedirectToAction("Index");
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/removeuser/{username}/{huntId} This is the get method for removing a user from a hunt.
         /// </summary>
@@ -290,8 +300,9 @@ namespace ScavengeRUs.Controllers
             ViewData["Hunt"] = huntid;
             var user = await _userRepo.ReadAsync(username);
             return View(user);
-
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/removeuser/{username}/{huntId} This is the post method for removing a user from a hunt.
         /// </summary>
@@ -304,8 +315,8 @@ namespace ScavengeRUs.Controllers
         {
             await _huntRepo.RemoveUserFromHunt(username, huntid);
             return RedirectToAction("Index");
-
         }
+
         /// <summary>
         /// This method generates a view of all task associated with a hunt. Pasing the huntid
         /// </summary>
@@ -320,14 +331,14 @@ namespace ScavengeRUs.Controllers
             ViewData["Hunt"] = hunt;
             ViewData["CurrentUser"] = currentUser;
             if (hunt == null)
-            {
-                return RedirectToAction("Index");
-            }
-            
+                return RedirectToAction("Index");            
+
             var tasks = await _huntRepo.GetLocations(hunt.HuntLocations);
             return View(tasks.OrderBy(o => currentUser?.TasksCompleted?.Contains(o)));
             
         }
+
+
         /// <summary>
         /// This method shows all tasks that can be added to the hunt. Exculding the tasks that are already added
         /// </summary>
@@ -344,6 +355,8 @@ namespace ScavengeRUs.Controllers
             //var locations = allLocations.Except(existingLocations);
             return View(allLocations);
         }
+
+
         /// <summary>
         /// This method is the post method for adding a task. This gets executed when you click "Add Task"
         /// </summary>
@@ -358,19 +371,23 @@ namespace ScavengeRUs.Controllers
             await _huntRepo.AddLocation(id, huntid);
             return RedirectToAction("ManageTasks", new {id=huntid});
         }
+
+
         /// <summary>
         /// This is the get method for removing a task from a hunt. This is executed when clicking "Remove" from the Hunt/ViewTasks screen
         /// </summary>
         /// <param name="id"></param>
         /// <param name="huntid"></param>
         /// <returns></returns>
-        //public async Task<IActionResult> RemoveTasks(int id, int huntid)
-        //{
-        //    var hunt = await _huntRepo.ReadAsync(huntid);
-        //    ViewData["Hunt"] = hunt;
-        //    var task = await _huntRepo.ReadLocation(id);
-        //    return View(task);
-        //}
+        public async Task<IActionResult> RemoveTasks(int id, int huntid)
+        {
+            var hunt = await _huntRepo.ReadAsync(huntid);
+            ViewData["Hunt"] = hunt;
+            var task = await _huntRepo.ReadLocation(id);
+            return View(task);
+        }
+
+
         /// <summary>
         /// This is the post method for removing a task. This is executed when you click "Remove" from the Hunt/RemoveTask screen
         /// </summary>
@@ -383,22 +400,32 @@ namespace ScavengeRUs.Controllers
             return RedirectToAction("ManageTasks", "Hunt", new {id=huntid});
         }
 
+
+        /// <summary>
+        /// updates all hunts
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult>  Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
             var hunt = await _huntRepo.ReadAsync(id);
             return View(hunt);
         }
 
+        /// <summary>
+        /// update operation for hunts
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="hunt"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]    // does not work as of now
         public IActionResult Update(int id, Hunt hunt)
         {
             if (hunt.EndDate < hunt.StartDate)
-            {
                 ModelState.AddModelError("EndDate", "End date must be equal to or after the start date.");
-            }
 
             if (ModelState.IsValid)
             {

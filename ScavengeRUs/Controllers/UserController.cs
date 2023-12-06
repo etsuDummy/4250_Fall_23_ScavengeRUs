@@ -92,9 +92,8 @@ namespace ScavengeRUs.Controllers
         {
             var user = await _userRepo.ReadAsync(username);
             if (user == null)
-            {
                 return RedirectToAction("Manage");
-            }
+
             return View(user);
         }
         
@@ -104,7 +103,6 @@ namespace ScavengeRUs.Controllers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        /// 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed([Bind(Prefix = "id")]string username)
         {
@@ -121,7 +119,6 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Details([Bind(Prefix = "id")]string username)
         {
             var user = await _userRepo.ReadAsync(username);
-
             return View(user);
         }
 
@@ -150,8 +147,7 @@ namespace ScavengeRUs.Controllers
                 await _userRepo.CreateAsync(user, defaultPassword);
                 return RedirectToAction("Details", new { id = user.UserName });
             }
-            return View(user);
-            
+            return View(user);            
         }
 
 
