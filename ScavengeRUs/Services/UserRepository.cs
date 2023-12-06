@@ -19,6 +19,8 @@ namespace ScavengeRUs.Services
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        
+        
         /// <summary>
         /// Dependency injection that pulls in the database
         /// </summary>q
@@ -29,12 +31,13 @@ namespace ScavengeRUs.Services
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             Functions functions
-            )
-        {
+        ) {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
+
         /// <summary>
         /// Returns a user object given the username
         /// </summary>
@@ -51,6 +54,8 @@ namespace ScavengeRUs.Services
             }
             return user;
         }
+        
+        
         /// <summary>
         /// Passing a user object and a password this creates a new user and adds it to the database
         /// </summary>
@@ -129,12 +134,9 @@ namespace ScavengeRUs.Services
                 .Include(p => p.Hunt)
                 .ToListAsync();
             foreach (var user in users)
-            {
                 if (user != null)
-                {
                     user.Roles = await _userManager.GetRolesAsync(user);
-                }
-            }
+
             return users;
         }
         

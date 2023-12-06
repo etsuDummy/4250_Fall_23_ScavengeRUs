@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ScavengeRUs.Models.Entities
 {
+    /// <summary>
+    /// models a row of the accesscode database table
+    /// </summary>
     public class AccessCode
     {
         public int Id { get; set; }
