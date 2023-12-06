@@ -16,10 +16,11 @@ namespace ScavengeRUs.Services
     /// </summary>
     public class UserRepository : IUserRepository
     {
-        private readonly Functions _functions;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        
+        
         /// <summary>
         /// Dependency injection that pulls in the database
         /// </summary>q
@@ -30,13 +31,13 @@ namespace ScavengeRUs.Services
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             Functions functions
-            )
-        {
+        ) {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
-            _functions = functions;
         }
+
+
         /// <summary>
         /// Returns a user object given the username
         /// </summary>
@@ -53,6 +54,8 @@ namespace ScavengeRUs.Services
             }
             return user;
         }
+        
+        
         /// <summary>
         /// Passing a user object and a password this creates a new user and adds it to the database
         /// </summary>
@@ -67,6 +70,8 @@ namespace ScavengeRUs.Services
             user.Roles.Add(user.Roles.First());
             return user;
         }
+
+
         /// <summary>
         /// This assigns a user to a role passing the username and rolename
         /// </summary>
@@ -98,6 +103,8 @@ namespace ScavengeRUs.Services
             }
 
         }
+        
+        
         /// <summary>
         /// This remove a user from a role passing the username and rolename
         /// </summary>
@@ -115,6 +122,8 @@ namespace ScavengeRUs.Services
                 }
             }
         }
+        
+        
         /// <summary>
         /// This returns a list of all the users
         /// </summary>
@@ -125,16 +134,15 @@ namespace ScavengeRUs.Services
                 .Include(p => p.Hunt)
                 .ToListAsync();
             foreach (var user in users)
-            {
                 if (user != null)
-                {
                     user.Roles = await _userManager.GetRolesAsync(user);
-                }
-            }
+
             return users;
         }
+        
+        
         /// <summary>
-        /// This updates the a users fields. Passing the username (old user) and user object (new user)
+        /// This updates the users fields. Passing the username (old user) and user object (new user)
         /// </summary>
         /// <param name="username"></param>
         /// <param name="user"></param>
@@ -154,6 +162,8 @@ namespace ScavengeRUs.Services
                 await _db.SaveChangesAsync();
             }
         }
+        
+        
         /// <summary>
         /// This delete a user from the db passing the username
         /// </summary>
@@ -168,6 +178,14 @@ namespace ScavengeRUs.Services
                 await _db.SaveChangesAsync();
             }
         }
+        
+        
+        /// <summary>
+        /// adds a user to a hunt
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="hunt"></param>
+        /// <returns></returns>
         public async Task AddUserToHunt(string username, Hunt hunt)
         {
             var user = await ReadAsync(username);
@@ -182,6 +200,13 @@ namespace ScavengeRUs.Services
                 await UpdateAsync(username, user);
             }
         }
+
+
+        /// <summary>
+        /// searches users by their access code
+        /// </summary>
+        /// <param name="accessCode"></param>
+        /// <returns></returns>
         public async Task<ApplicationUser> FindByAccessCode(string accessCode)
         {
             if (accessCode == null)
@@ -194,6 +219,15 @@ namespace ScavengeRUs.Services
             return user!;
         }
 
+        
+        /// <summary>
+        /// creates a batch of users all at once using contact info stored in a CSV file at the specified file path
+        /// NOTE: THIS METHOOD IS IMPLIMENTED AND DOES WORK. THERE'S JUST *NO* VISUAL FEEDBACK THAT IT DOES
+        /// **THE HARD CODED TESST FILE HAS REAL PEOPLES EMAILS AND NNUMBERS. IF YOU PLAN TO TEST THIS, MAKE YOUR OWN FILE!!**
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="serverUrl"></param>
+        /// <returns></returns>
         public async Task<List<ApplicationUser>> CreateUsers(string? filePath, string? serverUrl)
         {
             var users = new List<ApplicationUser>();
@@ -215,7 +249,7 @@ namespace ScavengeRUs.Services
                     FirstName = values[0],
                     LastName = values[1],
                     Roles = new List<string>(),
-                    Carrier = Enum.Parse<Carriers>(values[4]),
+                    Carrier = Enum.Parse<Carrier>(values[4]),
                     UserName = values[3],
                     Email = values[3],
                     PhoneNumber = values[2],
@@ -232,11 +266,13 @@ namespace ScavengeRUs.Services
                 var accessCode = $"{user.PhoneNumber}/{hunt.HuntName}";
                 var userAccessCode = new AccessCode { Code = accessCode, HuntId = hunt.Id };
                 user.AccessCode = userAccessCode;
-                await _functions.SendEmail(
+                await Functions.SendEmail(
                     user.Email, 
                     "Welcome to the ETSU Scavenger Hunt!", 
                     $"Hi {user.FirstName} {user.LastName} welcome to the ETSU Scavenger Hunt game! " +
                     $"To get started please go to {serverUrl} and login with the access code: {user.PhoneNumber}/{hunt.HuntName}");
+
+                Console.WriteLine("Batch created users");
             }
             _db.ApplicationUsers.AddRange(users);
             await _db.SaveChangesAsync();

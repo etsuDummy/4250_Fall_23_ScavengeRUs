@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<ScavengeRUs.Models.Entities.Location>
 @using Microsoft.AspNetCore.Identity
 @{
-    var hunt = (Hunt?)ViewData["Hunt"];
+    var hunt = (Hunt?)ViewData["Hunt"]; // Variable set in HuntController to track the current hunt in view
+    var currentUser = (ApplicationUser?)ViewData["CurrentUser"]; // Variable set in HuntController to track current user
     ViewData["Title"] = "View Players of hunt";
 }
 @{
@@ -108,48 +109,78 @@
 
         @foreach (var item in Model)
         {
+            @* Admin can view answers to the tasks for the hunt, and don't need to complete the tasks *@
+            @if(User.IsInRole("Admin"))
+            {
+                var img = $"/images/{item.Place}.jpg";
+                <div id="taskitem">
+                    <a data-id="@item.Id" data-task="@item.Task" data-huntid="@hunt.Id" id="btnCreateTask" class="list-group-item list-group-item-action">
+                        <div class="row" id="taskrow">
 
-            var img = $"/images/{item.Place}.jpg";
-            <div id="taskitem">
-                <a data-id="@item.Id" data-task="@item.Task" data-huntid="@hunt.Id" id="btnCreateTask" class="list-group-item list-group-item-action">
-                    <div class="row" id="taskrow">
-
-                        <div class="col">
-                            <img id="taskimg" src="@img" />
-                        </div>
-                        <div class="col-6">
-                            <div class="row" id="taskheader">
-                                @Html.DisplayFor(model => item.Place)
+                            <div class="col">
+                                <img id="taskimg" src="@img" />
                             </div>
-                            <div class="row" id="taskbody">
-                                @Html.DisplayFor(model => item.Task)
+                            <div class="col-6">
+                                <div class="row" id="taskheader">
+                                    @Html.DisplayFor(model => item.Place)
+                                </div>
+                                <div class="row" id="taskbody">
+                                    @Html.DisplayFor(model => item.Task)
+                                </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="row" id="taskstatus">
-                                <span>Status</span>
-                            </div>
-                            <div class="row" id="taskbody">
-                                @if (item.Completed == "Completed")
-                                {
-                                    <span id="status" style="color:green">Completed</span>
-                                }
-                                else
-                                {
-                                    <span id="status" style="color:red">Incomplete</span>
-                                }
-
+                            <div class="col">
+                                <span class="fw-bold">Answer:</span> @item.Answer
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="row" id="taskAnswer">
-                                <span class="completeBtn">Complete <i class="fa-solid fa-angle-right"></i></span>
+                    </a>
+                </div>
+            }
+            @* User view *@
+            else
+            {
+                var img = $"/images/{item.Place}.jpg";
+                <div id="taskitem">
+                    <a data-id="@item.Id" data-task="@item.Task" data-huntid="@hunt.Id" id="btnCreateTask" class="list-group-item list-group-item-action">
+                        <div class="row" id="taskrow">
+
+                            <div class="col">
+                                <img id="taskimg" src="@img" />
+                            </div>
+                            <div class="col-6">
+                                <div class="row" id="taskheader">
+                                    @Html.DisplayFor(model => item.Place)
+                                </div>
+                                <div class="row" id="taskbody">
+                                    @Html.DisplayFor(model => item.Task)
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row" id="taskstatus">
+                                    <span>Status</span>
+                                </div>
+                                <div class="row" id="taskbody">
+                                    @if (currentUser?.TasksCompleted?.Contains(item) ?? false)
+                                    {
+                                        <span id="status" style="color:green">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span id="status" style="color:red">Incomplete</span>
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row" id="taskAnswer">
+                                    <span class="completeBtn">Complete <i class="fa-solid fa-angle-right"></i></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                </a>
-            </div>
+                    </a>
+                </div>
+            }
+
         }
 
     </div>

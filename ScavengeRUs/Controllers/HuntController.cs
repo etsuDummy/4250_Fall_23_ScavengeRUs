@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using ScavengeRUs.Models.Entities;
 using ScavengeRUs.Services;
 using Microsoft.AspNetCore.Identity;
+using ScavengeRUs.Attributes;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScavengeRUs.Controllers
 {
@@ -24,16 +27,82 @@ namespace ScavengeRUs.Controllers
             _userRepo = userRepo;
             _huntRepo = HuntRepo;
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/index Returns a list of all hunts
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
+            //Parameters sent from view determine sort order of the hunts
+            ViewBag.CreationDateSortParm = sortOrder == "creation_date" ? "creation_date_desc" : "creation_date";
+            ViewBag.StartDateSortParm = sortOrder == "start_date" ? "start_date_desc" : "start_date";
+            ViewBag.HuntNameSortParm = sortOrder == "hunt_name" ? "hunt_name_desc" : "hunt_name";
+            ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+            ViewBag.EndDateSortParm = sortOrder == "end_date" ? "end_date_desc" : "end_date";
+            ViewBag.PlayerSortParm = sortOrder == "player" ? "player_desc" : "player";
+            ViewBag.TasksSortParm = sortOrder == "tasks" ? "tasks_desc" : "tasks";
+
             var hunts = await _huntRepo.ReadAllAsync();
+
+            //Sorting functionality for columns on view
+            //There is probably a better way to refactor this sorting functionality, this method was shown in the Microsoft Docs
+            switch(sortOrder)
+            {
+                case "creation_date":
+                    hunts = hunts.OrderBy(h => h.CreationDate).ToList();
+                    break;
+                case "creation_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.CreationDate).ToList();
+                    break;
+                case "start_date":
+                    hunts = hunts.OrderBy(h => h.StartDate).ToList();
+                    break;
+                case "start_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.StartDate).ToList();
+                    break;
+                case "hunt_name":
+                    hunts = hunts.OrderBy(h => h.HuntName).ToList();
+                    break;
+                case "hunt_name_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntName).ToList();
+                    break;
+                case "status":
+                    //Sorts by whether the hunt has ended or not
+                    hunts = hunts.OrderBy(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                case "status_desc":
+                    hunts = hunts.OrderByDescending(h => TimeSpan.Parse((h.EndDate - DateTime.Now).ToString()).Seconds < 0).ToList();
+                    break;
+                case "end_date":
+                    hunts = hunts.OrderBy(h => h.EndDate).ToList();
+                    break;
+                case "end_date_desc":
+                    hunts = hunts.OrderByDescending(h => h.EndDate).ToList();
+                    break;
+                case "player":
+                    hunts = hunts.OrderBy(h => h.Players.Count).ToList();
+                    break;
+                case "player_desc":
+                    hunts = hunts.OrderByDescending(h => h.Players.Count).ToList();
+                    break;
+                case "tasks":
+                    hunts = hunts.OrderBy(h => h.HuntLocations.Count).ToList();
+                    break;                
+                case "tasks_desc":
+                    hunts = hunts.OrderByDescending(h => h.HuntLocations.Count).ToList();
+                    break;
+                default:
+                    hunts = hunts.OrderBy(h => h.Id).ToList();
+                    break;
+            }
+
             return View(hunts);
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/create This is the get method for creating a hunt
         /// </summary>
@@ -43,6 +112,8 @@ namespace ScavengeRUs.Controllers
         {
             return View();
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/create This is the post method for creating a hunt
         /// </summary>
@@ -70,14 +141,12 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Details([Bind(Prefix ="Id")]int huntId)
         {
             if (huntId == 0)
-            {
                 return RedirectToAction("Index");
-            }
+
             var hunt = await _huntRepo.ReadAsync(huntId);
             if (hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
+
             return View(hunt);
         }
         /// <summary>
@@ -89,16 +158,16 @@ namespace ScavengeRUs.Controllers
         public async Task<IActionResult> Delete([Bind(Prefix = "Id")]int huntId)
         {
             if (huntId == 0)
-            {
                 return RedirectToAction("Index");
-            }
+
             var hunt = await _huntRepo.ReadAsync(huntId);
             if (hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
+
             return View(hunt);
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/delete/{huntId} This is the post method for deleteing a hunt.
         /// </summary>
@@ -111,6 +180,8 @@ namespace ScavengeRUs.Controllers
             await _huntRepo.DeleteAsync(huntId);
             return RedirectToAction("Index");
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/viewplayers/{huntId} Returns a list of all players in a specified hunt
         /// </summary>
@@ -122,12 +193,12 @@ namespace ScavengeRUs.Controllers
             var hunt = await _huntRepo.ReadHuntWithRelatedData(huntId);
             ViewData["Hunt"] = hunt;
             if(hunt == null)
-            {
                 return RedirectToAction("Index");
-            }
             
             return View(hunt.Players);
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/addplayertohunt{huntid} Get method for adding a player to a hunt. 
         /// </summary>
@@ -141,6 +212,8 @@ namespace ScavengeRUs.Controllers
             return View();
             
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/addplayertohunt{huntid} Post method for the form submission. This creates a user and assigns the access code for the hunt. 
         /// </summary>
@@ -191,9 +264,30 @@ namespace ScavengeRUs.Controllers
                 };
                 newUser.AccessCode.Users.Add(newUser);
             }
+            
+            //Set default value for email body
+            string emailBody = $"<div>Hi {newUser.FirstName} {newUser.LastName} welcome to the ETSU Scavenger Hunt game! " +
+                   $"To get started please go to the BucHunt website and login with the access code: {newUser.AccessCode.Code}</div>";
+            
+            if(hunt.InvitationBodyText is not null)
+            {
+                var userStr = hunt.InvitationBodyText.Replace("%user", $"{newUser.FirstName} {newUser.LastName}");
+                emailBody = userStr.Replace("%code", $"{newUser.AccessCode.Code}");
+            }
             await _huntRepo.AddUserToHunt(huntId, newUser); //This methods adds the user to the database and adds the database relationship to a hunt.
+
+            string subject = hunt.InvitationText ?? "Welcome to the ETSU Scavenger Hunt!";
+
+			await Functions.SendEmail(newUser.Email, subject, emailBody);
+
+            //Nick Sells, 11/29/2023: get this value from the user, instead of just hardcoding in verizon
+            //we have hard coded in verizon because thats what we all have
+            newUser.Carrier = Models.Enums.Carrier.Verizon;
+            await Functions.SendSMS(newUser.Carrier, newUser.PhoneNumber, $"{subject}\n{emailBody}");
             return RedirectToAction("Index");
         }
+
+
         /// <summary>
         /// www.localhost.com/hunt/removeuser/{username}/{huntId} This is the get method for removing a user from a hunt.
         /// </summary>
@@ -206,8 +300,9 @@ namespace ScavengeRUs.Controllers
             ViewData["Hunt"] = huntid;
             var user = await _userRepo.ReadAsync(username);
             return View(user);
-
         }
+        
+        
         /// <summary>
         /// www.localhost.com/hunt/removeuser/{username}/{huntId} This is the post method for removing a user from a hunt.
         /// </summary>
@@ -220,8 +315,8 @@ namespace ScavengeRUs.Controllers
         {
             await _huntRepo.RemoveUserFromHunt(username, huntid);
             return RedirectToAction("Index");
-
         }
+
         /// <summary>
         /// This method generates a view of all task associated with a hunt. Pasing the huntid
         /// </summary>
@@ -234,30 +329,16 @@ namespace ScavengeRUs.Controllers
             var currentUser = await _userRepo.ReadAsync(User.Identity?.Name!);
             var hunt = await _huntRepo.ReadHuntWithRelatedData(huntid);
             ViewData["Hunt"] = hunt;
+            ViewData["CurrentUser"] = currentUser;
             if (hunt == null)
-            {
-                return RedirectToAction("Index");
-            }
-            
+                return RedirectToAction("Index");            
+
             var tasks = await _huntRepo.GetLocations(hunt.HuntLocations);
-                foreach (var item in tasks)
-                {
-                    if (currentUser.TasksCompleted.Count() > 0)
-                    {
-                        var usertask = currentUser.TasksCompleted.FirstOrDefault(a => a.Id == item.Id);
-                        if (usertask != null && tasks.Contains(usertask))
-                        {
-                            item.Completed = "Completed";
-                        }
-                    }
-                    else
-                    {
-                        item.Completed = "Not completed";
-                    }
-                }
-            return View(tasks);
+            return View(tasks.OrderBy(o => currentUser?.TasksCompleted?.Contains(o)));
             
         }
+
+
         /// <summary>
         /// This method shows all tasks that can be added to the hunt. Exculding the tasks that are already added
         /// </summary>
@@ -274,6 +355,8 @@ namespace ScavengeRUs.Controllers
             //var locations = allLocations.Except(existingLocations);
             return View(allLocations);
         }
+
+
         /// <summary>
         /// This method is the post method for adding a task. This gets executed when you click "Add Task"
         /// </summary>
@@ -288,19 +371,23 @@ namespace ScavengeRUs.Controllers
             await _huntRepo.AddLocation(id, huntid);
             return RedirectToAction("ManageTasks", new {id=huntid});
         }
+
+
         /// <summary>
         /// This is the get method for removing a task from a hunt. This is executed when clicking "Remove" from the Hunt/ViewTasks screen
         /// </summary>
         /// <param name="id"></param>
         /// <param name="huntid"></param>
         /// <returns></returns>
-        //public async Task<IActionResult> RemoveTasks(int id, int huntid)
-        //{
-        //    var hunt = await _huntRepo.ReadAsync(huntid);
-        //    ViewData["Hunt"] = hunt;
-        //    var task = await _huntRepo.ReadLocation(id);
-        //    return View(task);
-        //}
+        public async Task<IActionResult> RemoveTasks(int id, int huntid)
+        {
+            var hunt = await _huntRepo.ReadAsync(huntid);
+            ViewData["Hunt"] = hunt;
+            var task = await _huntRepo.ReadLocation(id);
+            return View(task);
+        }
+
+
         /// <summary>
         /// This is the post method for removing a task. This is executed when you click "Remove" from the Hunt/RemoveTask screen
         /// </summary>
@@ -313,20 +400,40 @@ namespace ScavengeRUs.Controllers
             return RedirectToAction("ManageTasks", "Hunt", new {id=huntid});
         }
 
+
+        /// <summary>
+        /// updates all hunts
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult>  Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
             var hunt = await _huntRepo.ReadAsync(id);
-
             return View(hunt);
         }
 
+        /// <summary>
+        /// update operation for hunts
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="hunt"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [EndDateDateValidation(ErrorMessage = "End date must be equal to or after the start date.")]    // does not work as of now
         public IActionResult Update(int id, Hunt hunt)
         {
-            _huntRepo.Update(id, hunt);
-            return RedirectToAction("Index");
+            if (hunt.EndDate < hunt.StartDate)
+                ModelState.AddModelError("EndDate", "End date must be equal to or after the start date.");
+
+            if (ModelState.IsValid)
+            {
+                _huntRepo.Update(id, hunt);
+                return RedirectToAction("Index");
+            }
+
+            return View(hunt);
         }
     }
 }

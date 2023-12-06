@@ -17,17 +17,21 @@ namespace ScavengeRUs.Models.Entities
         [DisplayName("First Name")]
         [StringLength(50)]
         public string? FirstName { get; set; }
+
         [DisplayName("Last Name")]
         [StringLength(50)]
         [Required]
         public string? LastName { get; set; }
+
         public AccessCode? AccessCode { get; set; }
         [DisplayName("Registered Hunt")]
+
         public Hunt? Hunt{ get; set; }
+
         public ICollection<Location>? TasksCompleted { get; set; } = new List<Location>();
         [NotMapped]
         public ICollection<string> Roles { get; set; }
     = new List<string>();
-        public Carriers Carrier { get; set; }
+        public Carrier Carrier { get; set; }
     }
 }
