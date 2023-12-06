@@ -7,14 +7,10 @@ namespace ScavengeRUs.Data
 {
     /// <summary>
     /// This is the interface to connects to the database
-    /// 
     /// </summary>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) {}
 
         public DbSet<Location> Location => Set<Location>();
         public DbSet<Hunt> Hunts => Set<Hunt>();
@@ -56,11 +52,6 @@ namespace ScavengeRUs.Data
                 .WithMany(a => a.AccessCodes)
                 .HasForeignKey(a => a.HuntId)
                 .OnDelete(DeleteBehavior.SetNull);
-
-            
-
-
-            
         }
     }
 }

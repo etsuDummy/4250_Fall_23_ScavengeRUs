@@ -8,6 +8,7 @@ namespace ScavengeRUs.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        
         /// <summary>
         /// This constructor takes in a context so that the controller has access to the database
         /// </summary>
@@ -16,6 +17,7 @@ namespace ScavengeRUs.Controllers
         {
             _context = context;
         }
+
 
         /// <summary>
         /// This view will show on the /Questions page. It passes a List of the items from the Location
